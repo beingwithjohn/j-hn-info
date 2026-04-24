@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>john</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,wght@0,300;0,400;1,300;1,400&family=Geist+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: 'Newsreader', Georgia, serif;
+    background: #f6f3ec;
+    color: #1a1a18;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  .viewport {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .world {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+  }
+
+  .card {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    overflow: hidden;
+  }
+
+  .card-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 30rem;
+  }
+
+
+
+  .card-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    pointer-events: none;
+  }
+
+  .card-logo {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    margin-bottom: 1.4rem;
+    display: block;
+    opacity: 0.92;
+  }
+
+  .card-logo.multiply {
+    mix-blend-mode: multiply;
+  }
+
+  /* Site-card header: title block left, logo right */
+  .site-head {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1.2rem;
+  }
+  .site-head-text { flex: 1; min-width: 0; }
+  .site-head-text h1 { margin-bottom: 0.4rem; }
+  .site-head-text p  { margin-bottom: 0; }
+  .site-logo {
+    width: 92px;
+    height: 92px;
+    object-fit: contain;
+    flex-shrink: 0;
+    opacity: 0.95;
+  }
+  .site-logo.multiply { mix-blend-mode: multiply; }
+
+  /* About-card portrait */
+  .about-portrait {
+    float: right;
+    width: 42%;
+    max-width: 180px;
+    aspect-ratio: 4 / 5;
+    margin: 0.2rem 0 1rem 1.8rem;
+    background-size: cover;
+    background-position: center;
+    border-radius: 2px;
+    filter: grayscale(0.15) contrast(0.98);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 10px 30px -12px rgba(60,50,30,0.18);
+    shape-outside: margin-box;
+    shape-margin: 0.6rem;
+  }
+
+  .card-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #b0aba2;
+    margin-bottom: 1.6rem;
+  }
+
+  h1 {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    margin-bottom: 1.4rem;
+    color: #0f0f0d;
+    text-wrap: balance;
+  }
+
+  h2 {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    color: #0f0f0d;
+  }
+
+  p {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: #3d3c37;
+    margin-bottom: 0.9rem;
+    text-wrap: pretty;
+  }
+
+  p:last-child { margin-bottom: 0; }
+  .em { font-style: italic; }
+
+  a {
+    color: #1a1a18;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 0.5px;
+    text-decoration-color: #c9c3b8;
+    transition: text-decoration-color 0.25s ease, color 0.25s ease;
+  }
+  a:hover { text-decoration-color: #1a1a18; }
+
+  .mono {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 300;
+    color: #6b6759;
+    letter-spacing: 0.04em;
+  }
+
+  .rule { border: none; border-top: 0.5px solid #e4dfd4; margin: 1.4rem 0; }
+
+  @keyframes nav-pulse {
+    0%    { opacity: 0; }
+    3.5%  { opacity: 0.75; }
+    7%    { opacity: 0; }
+    10.5% { opacity: 0.75; }
+    14%   { opacity: 0; }
+    17.5% { opacity: 0.75; }
+    21%   { opacity: 0; }
+    100%  { opacity: 0; }
+  }
+
+  @keyframes arrow-pulse {
+    0%    { transform: scale(0.9);  color: #bbb; }
+    3.5%  { transform: scale(1.15); color: #333; }
+    7%    { transform: scale(0.9);  color: #bbb; }
+    10.5% { transform: scale(1.15); color: #333; }
+    14%   { transform: scale(0.9);  color: #bbb; }
+    17.5% { transform: scale(1.15); color: #333; }
+    21%   { transform: scale(0.9);  color: #bbb; }
+    100%  { transform: scale(0.9);  color: #bbb; }
+  }
+
+  @keyframes breathY {
+    0%   { transform: translateY(0); }
+    25%  { transform: translateY(-14px); }
+    75%  { transform: translateY(14px); }
+    100% { transform: translateY(0); }
+  }
+
+  @keyframes breathX {
+    0%   { transform: translateX(0); }
+    25%  { transform: translateX(-14px); }
+    75%  { transform: translateX(14px); }
+    100% { transform: translateX(0); }
+  }
+
+  .nav {
+    position: fixed;
+    z-index: 200;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nav.hidden { display: none; }
+
+  .nav-arrow-wrap {
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .nav:hover .nav-arrow-wrap {
+    opacity: 1 !important;
+    animation-play-state: paused !important;
+  }
+  .nav:hover .nav-arrow {
+    animation-play-state: paused !important;
+    transform: scale(1);
+    color: #555;
+  }
+  .nav.hinting .nav-arrow-wrap { animation: nav-pulse 20s ease-in-out infinite; }
+  .nav.hinting .nav-arrow { animation: arrow-pulse 20s ease-in-out infinite; }
+
+  #breath-x {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0; left: 0;
+  }
+
+  #breath-x.breathing {
+    animation: breathX 3s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+  }
+
+  .world.breathing {
+    animation: breathY 3s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+  }
+
+  .nav-up    { top: 0; left: 50%; transform: translateX(-50%); width: 200px; height: 88px; }
+  .nav-down  { bottom: 0; left: 50%; transform: translateX(-50%); width: 200px; height: 88px; }
+  .nav-left  { left: 0; top: 50%; transform: translateY(-50%); width: 88px; height: 200px; }
+  .nav-right { right: 0; top: 50%; transform: translateY(-50%); width: 88px; height: 200px; }
+
+  .nav-arrow {
+    font-family: 'Geist Mono', monospace;
+    font-size: 20px;
+    color: #a29d92;
+    font-weight: 300;
+    display: inline-block;
+  }
+
+  .compass {
+    position: fixed;
+    bottom: 1.75rem;
+    right: 1.75rem;
+    width: 40px;
+    height: 40px;
+    z-index: 200;
+  }
+  .compass svg { width: 100%; height: 100%; }
+  .compass-dot { transition: fill 0.35s ease, r 0.3s ease; cursor: pointer; }
+  .compass-dot.active { fill: #1a1a18; }
+  .compass-dot.inactive { fill: #d6d0c4; }
+  .compass-dot.inactive:hover { fill: #9a9489; }
+
+  /* ---------- mobile ---------- */
+  @media (max-width: 640px) {
+    .card { padding: 3rem 1.5rem; }
+    .card-inner { max-width: 26rem; }
+    h1 { font-size: clamp(1.9rem, 9vw, 2.6rem); margin-bottom: 1.2rem; }
+    p { font-size: 1rem; line-height: 1.7; }
+    .rule { margin: 1.15rem 0; }
+    .card-label { margin-bottom: 1.2rem; }
+    .nav-up, .nav-down { width: 60vw; height: 64px; }
+    .nav-left, .nav-right { height: 50vh; width: 56px; }
+    .compass { bottom: 1.25rem; right: 1.25rem; width: 36px; height: 36px; }
+    .site-head { gap: 1rem; }
+    .site-logo { width: 72px; height: 72px; }
+    .about-portrait { width: 40%; margin-left: 1.4rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav.hinting .nav-arrow-wrap,
+    .nav.hinting .nav-arrow,
+    .world.breathing,
+    #breath-x.breathing { animation: none !important; }
+    .nav-arrow-wrap { opacity: 0.6; }
+  }
+</style>
+</head>
+<body>
+
+<div class="viewport">
+  <div id="breath-x">
+  <div class="world" id="world">
+
+    <!-- CENTRE -->
+    <div class="card" data-pos="center">
+      <div class="card-bg" style="background-image:url('images/center-bg.jpg'); opacity:0.08;"></div>
+      <div class="card-inner" style="text-align:center;">
+        <h1 style="margin-bottom:1.4rem; font-weight:500; letter-spacing:-0.03em;">john</h1>
+        <p class="em" style="font-size:1.4rem; color:#3d3c37; margin-bottom:0.8rem; line-height:1.35;">mind is the medium;<br>life is the canvas</p>
+        <hr class="rule">
+        <div style="display:flex; flex-direction:column; gap:0.6rem; align-items:center; margin:1.4rem 0; font-size:1.2rem;">
+          <a href="https://spacetobe.xyz" target="_blank" class="mono" style="color:#1a1a18;">One-to-One</a>
+          <a href="https://beingsclub.com" target="_blank" class="mono" style="color:#1a1a18;">Beings Club</a>
+          <a href="https://wonderfool.substack.com" target="_blank" class="mono" style="color:#1a1a18;">Wonderfool</a>
+        </div>
+        <hr class="rule">
+        <p class="mono" style="font-size:0.78rem; color:#3d3c37;"><a id="email-link" href="#" style="color:inherit; text-decoration:none;">&nbsp;</a></p>
+        <p class="mono" style="margin-top:0.7rem; color:#8a8679; font-size:0.74rem;">currently listening to:<br><span style="color:#3d3c37; font-style:italic;">You Can Do Anything by Dana and Alden</span></p>
+      </div>
+    </div>
+
+    <!-- UP: About -->
+    <div class="card" data-pos="up">
+      <div class="card-inner">
+        <div class="card-label">about</div>
+        <h1 style="font-size:clamp(1.6rem, 4.2vw, 2.4rem);">Meditation, <span class="em">Friendship,</span> & Curiosity.</h1>
+        <hr class="rule">
+        <div class="about-portrait" style="background-image:url('images/up-bg.jpg');" aria-label="portrait of John"></div>
+        <p>My name is John.</p>
+        <p>I believe good relationships are essential for societies to thrive, and that our relationship to ourselves is the place to begin.</p>
+        <p>My work sits at the intersection of meditation, creativity, and lived experience.</p>
+        <p>I am trained as a mindfulness meditation teacher and have spent years exploring through practice, travel, writing, and building.</p>
+        <hr class="rule" style="clear:both;">
+        <p class="mono"><span style="color:inherit;">liverpool, uk &nbsp;·&nbsp; </span><span id="about-email">&nbsp;</span></p>
+      </div>
+    </div>
+
+    <!-- DOWN: Beings Club -->
+    <div class="card" data-pos="down">
+      <div class="card-inner">
+        <div class="card-label">community</div>
+        <div class="site-head">
+          <div class="site-head-text">
+            <h1>beings club</h1>
+            <p><strong><span class="em">community</span></strong> for the curious.</p>
+          </div>
+          <img src="images/down-inline.png" class="site-logo multiply" alt="">
+        </div>
+        <hr class="rule">
+        <p>Space to connect — to oneself, to each other, and to what is possible.</p>
+        <p>Beings Club has a simple format: a period of individual practice held in a shared field, time for breakout conversations, and a closing that brings everyone back together.</p>
+        <hr class="rule">
+        <p><a href="https://beingsclub.com" target="_blank">beingsclub.com ↗</a></p>
+      </div>
+    </div>
+
+    <!-- LEFT: Wonderfool -->
+    <div class="card" data-pos="left">
+      <div class="card-inner">
+        <div class="card-label">words</div>
+        <div class="site-head">
+          <div class="site-head-text">
+            <h1>wonderfool</h1>
+            <p><strong><span class="em">words and conversation</span></strong> for wonderfools.</p>
+          </div>
+          <img src="images/left-inline.png" class="site-logo" alt="">
+        </div>
+        <hr class="rule">
+        <p>A place where I share conversations I'm having with others and myself in written and audio forms.</p>
+        <hr class="rule">
+        <p><a href="https://wonderfool.substack.com" target="_blank">wonderfool on substack ↗</a></p>
+      </div>
+    </div>
+
+    <!-- RIGHT: Space to Be -->
+    <div class="card" data-pos="right">
+      <div class="card-inner">
+        <div class="card-label">one-to-one</div>
+        <div class="site-head">
+          <div class="site-head-text">
+            <h1>space to be</h1>
+            <p><strong><span class="em">one-to-one space</span></strong> for navigating change.</p>
+          </div>
+          <img src="images/right-inline.png" class="site-logo" alt="">
+        </div>
+        <hr class="rule">
+        <p>I offer the kind of support that only arrives through real relationship.</p>
+        <p>Whether we meet only once or a hundred times, my intention is to support you to meet every kind of change.</p>
+        <hr class="rule">
+        <p><a href="https://spacetobe.xyz" target="_blank">spacetobe.xyz ↗</a></p>
+      </div>
+    </div>
+
+  </div>
+  </div>
+</div>
+
+<div class="nav nav-up"    id="nav-up"    onclick="move('up')">   <div class="nav-arrow-wrap"><span class="nav-arrow">↑</span></div></div>
+<div class="nav nav-down"  id="nav-down"  onclick="move('down')"> <div class="nav-arrow-wrap"><span class="nav-arrow">↓</span></div></div>
+<div class="nav nav-left"  id="nav-left"  onclick="move('left')"> <div class="nav-arrow-wrap"><span class="nav-arrow">←</span></div></div>
+<div class="nav nav-right" id="nav-right" onclick="move('right')"><div class="nav-arrow-wrap"><span class="nav-arrow">→</span></div></div>
+
+<div class="compass" aria-label="location">
+  <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="22" cy="22" r="19" stroke="#d6d0c4" stroke-width="0.5" fill="none" opacity="0.6"/>
+    <circle id="cd-up"     cx="22" cy="6"  r="3" class="compass-dot inactive" onclick="compassClick('up')"/>
+    <circle id="cd-down"   cx="22" cy="38" r="3" class="compass-dot inactive" onclick="compassClick('down')"/>
+    <circle id="cd-left"   cx="6"  cy="22" r="3" class="compass-dot inactive" onclick="compassClick('left')"/>
+    <circle id="cd-right"  cx="38" cy="22" r="3" class="compass-dot inactive" onclick="compassClick('right')"/>
+    <circle id="cd-center" cx="22" cy="22" r="3" class="compass-dot active"   onclick="compassClick('center')"/>
+  </svg>
+</div>
+
+<script>
+  // Toroidal navigation: cards are repositioned dynamically so travel
+  // direction always matches the animation — truly infinite in all directions.
+
+  const neighbors = {
+    center: { up: 'up',     down: 'down',   left: 'left',   right: 'right' },
+    up:     { up: 'down',   down: 'center', left: 'left',   right: 'right' },
+    down:   { up: 'center', down: 'up',     left: 'left',   right: 'right' },
+    left:   { up: 'up',     down: 'down',   left: 'right',  right: 'center' },
+    right:  { up: 'up',     down: 'down',   left: 'center', right: 'left'  },
+  };
+
+  const dirOffset = {
+    up:    { x: 0,  y: -1 },
+    down:  { x: 0,  y:  1 },
+    left:  { x: -1, y:  0 },
+    right: { x:  1, y:  0 },
+  };
+
+  // Each card is a real DOM element; we position them in vw/vh units
+  // relative to the viewport centre, using inline top/left.
+  const cards = {};
+  document.querySelectorAll('.card').forEach(el => {
+    cards[el.dataset.pos] = el;
+  });
+
+  // Current logical position (card id at centre of viewport)
+  let current = 'center';
+  let animating = false;
+
+  // Place all cards around 'current' card based on neighbor map.
+  // current card → (0,0), its neighbors at (±1, 0) or (0, ±1).
+  function layoutCards() {
+    const placed = {};
+    placed[current] = { x: 0, y: 0 };
+
+    // Place each direct neighbor
+    ['up','down','left','right'].forEach(dir => {
+      const nb = neighbors[current][dir];
+      if (nb && !(nb in placed)) {
+        placed[nb] = { x: dirOffset[dir].x, y: dirOffset[dir].y };
+      }
+    });
+
+    // Any card not in the layout gets hidden far away
+    Object.keys(cards).forEach(id => {
+      const p = placed[id] || { x: 9, y: 9 };
+      const el = cards[id];
+      el.style.transition = 'none';
+      el.style.left = (p.x * 100) + 'vw';
+      el.style.top  = (p.y * 100) + 'vh';
+    });
+  }
+
+  function updateCompass() {
+    ['center','up','down','left','right'].forEach(id => {
+      const dot = document.getElementById('cd-' + id);
+      dot.classList.toggle('active', id === current);
+      dot.classList.toggle('inactive', id !== current);
+    });
+  }
+
+  // — Hint system —
+  let hinting = true;
+  const world = document.getElementById('world');
+  const breathX = document.getElementById('breath-x');
+  let hintTimeout = null;
+
+  function triggerBreath() {
+    if (!hinting) return;
+
+    // Reset animations by removing class, forcing reflow, re-adding
+    world.classList.remove('breathing');
+    breathX.classList.remove('breathing');
+    void world.offsetWidth;
+
+    // Y axis first
+    world.classList.add('breathing');
+
+    // X axis after Y finishes (3s)
+    hintTimeout = setTimeout(() => {
+      if (!hinting) return;
+      breathX.classList.add('breathing');
+
+      // After X finishes, pause 4s then repeat
+      hintTimeout = setTimeout(() => {
+        if (!hinting) return;
+        world.classList.remove('breathing');
+        breathX.classList.remove('breathing');
+        void world.offsetWidth;
+        hintTimeout = setTimeout(triggerBreath, 54000);
+      }, 3000);
+    }, 3000);
+  }
+
+  function startHinting() {
+    document.querySelectorAll('.nav').forEach(el => el.classList.add('hinting'));
+    hintTimeout = setTimeout(triggerBreath, 900);
+  }
+
+  function stopHinting() {
+    if (!hinting) return;
+    hinting = false;
+    clearTimeout(hintTimeout);
+    document.querySelectorAll('.nav').forEach(el => {
+      el.classList.remove('hinting');
+      el.style.opacity = '';
+    });
+    world.classList.remove('breathing');
+    breathX.classList.remove('breathing');
+  }
+
+  function move(dir) {
+    stopHinting();
+    if (animating) return;
+    const dest = neighbors[current][dir];
+    if (!dest) return;
+    animating = true;
+
+    const off = dirOffset[dir];
+
+    // Place destination card exactly one step in travel direction (no transition)
+    const destEl = cards[dest];
+    destEl.style.transition = 'none';
+    destEl.style.left = (off.x * 100) + 'vw';
+    destEl.style.top  = (off.y * 100) + 'vh';
+
+    // On next frame, animate all cards in opposite direction
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const tx = -off.x * 100;
+        const ty = -off.y * 100;
+        Object.keys(cards).forEach(id => {
+          const el = cards[id];
+          const curLeft = parseFloat(el.style.left);
+          const curTop  = parseFloat(el.style.top);
+          el.style.transition = 'left 0.65s cubic-bezier(0.77,0,0.175,1), top 0.65s cubic-bezier(0.77,0,0.175,1)';
+          el.style.left = (curLeft + tx) + 'vw';
+          el.style.top  = (curTop  + ty) + 'vh';
+        });
+
+        setTimeout(() => {
+          current = dest;
+          layoutCards(); // snap everything back into clean layout
+          updateCompass();
+          animating = false;
+        }, 660);
+      });
+    });
+  }
+
+  function compassClick(dest) {
+    stopHinting();
+    if (dest === current || animating) return;
+    // Find a direction that leads toward dest (one hop if possible)
+    for (const dir of ['up','down','left','right']) {
+      if (neighbors[current][dir] === dest) { move(dir); return; }
+    }
+    // Not a direct neighbor — just jump instantly
+    current = dest;
+    layoutCards();
+    updateCompass();
+  }
+
+  document.addEventListener('keydown', e => {
+    const map = { ArrowUp:'up', ArrowDown:'down', ArrowLeft:'left', ArrowRight:'right' };
+    if (map[e.key]) { e.preventDefault(); move(map[e.key]); }
+  });
+
+  // Trackpad / mouse-wheel navigation.
+  // Trackpads emit a stream of small deltas; we accumulate them, fire one move
+  // when a threshold is crossed, then lock out further moves until the gesture
+  // settles (no events for ~140ms).
+  (function(){
+    let ax = 0, ay = 0;
+    let locked = false;
+    let settleTimer = null;
+    const THRESHOLD = 60;          // px of accumulated delta to trigger a move
+    const SETTLE_MS = 140;         // gesture-end quiet period
+
+    function resetGesture() {
+      ax = 0; ay = 0; locked = false;
+    }
+
+    window.addEventListener('wheel', e => {
+      // Always prevent the page from scrolling — the world is fixed.
+      e.preventDefault();
+      if (animating) return;
+
+      // Restart the settle timer on every event.
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(resetGesture, SETTLE_MS);
+
+      if (locked) return;
+
+      ax += e.deltaX;
+      ay += e.deltaY;
+
+      // Decide axis by which accumulator crosses threshold first.
+      if (Math.abs(ax) >= THRESHOLD && Math.abs(ax) >= Math.abs(ay)) {
+        locked = true;
+        move(ax > 0 ? 'right' : 'left');
+      } else if (Math.abs(ay) >= THRESHOLD) {
+        locked = true;
+        move(ay > 0 ? 'down' : 'up');
+      }
+    }, { passive: false });
+  })();
+
+  let tx = null, ty = null;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; });
+  document.addEventListener('touchend', e => {
+    if (tx === null) return;
+    const dx = tx - e.changedTouches[0].clientX;
+    const dy = ty - e.changedTouches[0].clientY;
+    if (Math.abs(dx) > Math.abs(dy)) { if (Math.abs(dx) > 40) { stopHinting(); move(dx > 0 ? 'right' : 'left'); } }
+    else { if (Math.abs(dy) > 40) { stopHinting(); move(dy > 0 ? 'down' : 'up'); } }
+    tx = ty = null;
+  });
+
+  layoutCards();
+  updateCompass();
+  startHinting();
+
+  // Assemble email at runtime so proxies/extensions can't rewrite it.
+  (function(){
+    var u = 'john', d = 'spacetobe' + '.' + 'xyz';
+    var addr = u + '@' + d;
+    var a = document.getElementById('email-link');
+    if (a) { a.href = 'mailto:' + addr; a.textContent = addr; }
+    var b = document.getElementById('about-email');
+    if (b) { b.textContent = addr; }
+  })();
+</script>
+</body>
+</html>

@@ -50,7 +50,28 @@
     border-radius: 4px; will-change: transform; cursor: crosshair;
   }
   .content { width: 100%; max-width: 38rem; }
-  header { margin-bottom: 1.4rem; }
+  header { margin-bottom: 1.4rem; position: relative; }
+  #name-wrap { display: flex; align-items: flex-start; gap: 0.55rem; width: fit-content; cursor: help; }
+  #info-badge {
+    display: flex; align-items: center; justify-content: center;
+    width: 17px; height: 17px; border: 1px solid #a5a49e; border-radius: 50%;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: #8a8983;
+    margin-top: 0.2rem; user-select: none; transition: color .25s ease, border-color .25s ease;
+  }
+  #info-box {
+    position: absolute; top: calc(100% + 0.6rem); left: 0; z-index: 20; max-width: 24rem;
+    background: #fffefb; border: 1px solid rgba(28,28,26,0.12); border-radius: 6px;
+    padding: 0.95rem 1.1rem; box-shadow: 0 12px 32px -16px rgba(28,28,26,0.25);
+    font-size: 0.9rem; line-height: 1.65; color: #3a3934; text-wrap: pretty;
+    opacity: 0; visibility: hidden; transform: translateY(-4px); pointer-events: none;
+    transition: opacity .3s ease, transform .3s ease, visibility .3s;
+  }
+  #info-box > span { position: relative; display: block; padding-right: 1.2rem; }
+  #info-close {
+    display: none; position: absolute; top: -0.3rem; right: -0.35rem; width: 24px; height: 24px;
+    border: none; background: none; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem; color: #8a8983; cursor: pointer; line-height: 1;
+  }
   h1 {
     font-weight: 700; font-size: clamp(2.2rem, 5vw, 3.1rem);
     line-height: 1; letter-spacing: -0.04em; color: #141412; margin-bottom: 0.7rem;
@@ -100,7 +121,11 @@
   <div class="content">
 
     <header>
-      <h1>John Ooi</h1>
+      <div id="name-wrap">
+        <h1>John Ooi</h1>
+        <span id="info-badge" role="button" tabindex="0" aria-label="about John" aria-describedby="info-box">?</span>
+      </div>
+      <div id="info-box" role="tooltip"><span>I'm John. My work lives where meditation, friendship, and curiosity meet. I'm trained as a mindfulness teacher, but much of what I offer comes from years of personal practice, travel, experimentation, and building.<button id="info-close" aria-label="close">×</button></span></div>
       <p class="tagline">mind is the medium; life is the canvas</p>
     </header>
 
@@ -138,6 +163,42 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
+  // — About info box —
+  (function () {
+    var wrap = document.getElementById('name-wrap');
+    var badge = document.getElementById('info-badge');
+    var box = document.getElementById('info-box');
+    var closeBtn = document.getElementById('info-close');
+    if (!wrap || !box || !badge) return;
+    var touch = window.matchMedia && window.matchMedia('(hover: none)').matches;
+    if (touch && closeBtn) closeBtn.style.display = 'block';
+    var open = false;
+    function show() {
+      open = true;
+      box.style.opacity = '1'; box.style.visibility = 'visible'; box.style.transform = 'translateY(0)';
+      box.style.pointerEvents = 'auto';
+      badge.style.color = '#14504a'; badge.style.borderColor = '#14504a';
+    }
+    function hide() {
+      open = false;
+      box.style.opacity = '0'; box.style.visibility = 'hidden'; box.style.transform = 'translateY(-4px)';
+      box.style.pointerEvents = 'none';
+      badge.style.color = '#8a8983'; badge.style.borderColor = '#a5a49e';
+    }
+    if (!touch) {
+      wrap.addEventListener('mouseenter', show);
+      wrap.addEventListener('mouseleave', hide);
+    }
+    badge.addEventListener('focus', show);
+    badge.addEventListener('blur', function () { if (!touch) hide(); });
+    badge.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); open ? hide() : show(); });
+    if (closeBtn) closeBtn.addEventListener('click', function (e) { e.stopPropagation(); hide(); });
+    document.addEventListener('click', function (e) {
+      if (open && !box.contains(e.target) && !wrap.contains(e.target)) hide();
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) hide(); });
+  })();
 
   // — Dateline —
   (function () {

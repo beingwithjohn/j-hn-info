@@ -101,12 +101,24 @@
     font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
     letter-spacing: 0.04em; color: #8a8983; margin-bottom: 0.55rem;
   }
-  #letter iframe {
-    display: block; width: 100%; height: 150px;
-    border: 1px solid rgba(28,28,26,0.1); border-radius: 6px; background: #fffefb;
+  #letter form { display: flex; gap: 0.5rem; }
+  #letter input {
+    flex: 1; min-width: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+    letter-spacing: 0.02em; color: #3a3934; background: #fffefb;
+    border: 1px solid rgba(28,28,26,0.15); border-radius: 6px; padding: 0.55rem 0.75rem;
+    transition: border-color 0.25s ease;
   }
-  /* preserve the zero-scroll viewport (and the artwork's presence) on short screens */
-  @media (max-height: 800px) { #letter { display: none; } }
+  #letter input::placeholder { color: #a5a49e; }
+  #letter input:focus { outline: none; border-color: #14504a; }
+  #letter button {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.04em;
+    color: #14504a; background: none; border: 1px solid #14504a; border-radius: 6px;
+    padding: 0.55rem 0.95rem; cursor: pointer; white-space: nowrap;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  #letter button:hover { background: #14504a; color: #f5f4f0; }
+  /* preserve the zero-scroll viewport on short screens */
+  @media (max-height: 640px) { #letter { display: none; } }
   footer {
     margin-top: 1.4rem; display: flex; flex-wrap: wrap; align-items: baseline;
     justify-content: space-between; gap: 0.5rem 1.2rem;
@@ -166,8 +178,10 @@
 
     <div id="letter">
       <p id="letter-pitch">occasional words + conversation, in your inbox</p>
-      <iframe src="https://wonderfool.substack.com/embed" title="Subscribe to Wonderfool"
-        frameborder="0" scrolling="no" loading="lazy"></iframe>
+      <form id="letter-form">
+        <input type="email" required placeholder="you@somewhere" aria-label="Email address" autocomplete="email">
+        <button type="submit">subscribe&nbsp;↗</button>
+      </form>
     </div>
 
     <footer>
@@ -215,6 +229,18 @@ document.addEventListener('DOMContentLoaded', function () {
       if (open && !box.contains(e.target) && !wrap.contains(e.target)) hide();
     });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) hide(); });
+  })();
+
+  // — Wonderfool letter: hand the email to Substack —
+  (function () {
+    var f = document.getElementById('letter-form');
+    if (!f) return;
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var email = f.querySelector('input[type=email]').value.trim();
+      if (!email) return;
+      window.open('https://wonderfool.substack.com/subscribe?email=' + encodeURIComponent(email), '_blank', 'noopener');
+    });
   })();
 
   // — Dateline —

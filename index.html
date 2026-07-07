@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>John Ooi</title>
-<meta name="description" content="John Ooi — mindfulness teacher and writer in Lisbon. One-to-one work, Beings Club community, and Wonderfool words.">
+<meta name="description" content="John Ooi — meditation teacher and writer in Lisbon. One-to-one work, Beings Club community, and Wonderfool words.">
 
 <!-- Open Graph / social -->
 <meta property="og:type" content="website">
@@ -27,117 +27,189 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&family=Figtree:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
     width: 100%; height: 100%; overflow: hidden;
     font-family: 'Figtree', sans-serif;
-    background: #cdcdcd; color: #282728;
+    background: #242423; color: #1c1c1a;
     -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
   a {
-    color: #282728; text-decoration: underline; text-underline-offset: 3px;
-    text-decoration-thickness: 0.5px; text-decoration-color: rgba(40,39,40,0.32);
+    color: #0e2c33; text-decoration: underline; text-underline-offset: 3px;
+    text-decoration-thickness: 0.5px; text-decoration-color: rgba(16,44,50,0.32);
     transition: text-decoration-color .25s ease, color .25s ease;
   }
-  a:hover { color: #148cc1; text-decoration-color: #148cc1; }
+  a:hover { color: #2b6f66; text-decoration-color: #2b6f66; }
   #scroller::-webkit-scrollbar { display: none; }
-  @keyframes hint-nudge { 0%,100%{transform:translateY(0);opacity:.85;} 50%{transform:translateY(6px);opacity:1;} }
+  @media (hover: hover) and (pointer: fine) {
+    html, body, #scroller { cursor: url("images/cursor-arrow.png") 0 0, auto; }
+    a, a *, [href], button, [role="link"], [onclick] { cursor: url("images/cursor-hand.png") 12 1, pointer; }
+  }
+  .card::-webkit-scrollbar { display: none; }
+  @keyframes hint-nudge { 0%,100%{transform:translateY(0);opacity:.85;} 50%{transform:translateY(5px);opacity:1;} }
+  .card { transform-origin: center; transform-style: preserve-3d; width: min(90vw,31rem); animation: fieldMorph 15s ease-in-out infinite; will-change: transform, border-radius; backface-visibility: hidden; }
+  @keyframes fieldMorph {
+    0%,100% { border-radius: 27% 37% 25% 35% / 37% 26% 35% 28%; }
+    20%     { border-radius: 41% 24% 38% 27% / 25% 41% 26% 39%; }
+    45%     { border-radius: 24% 41% 31% 33% / 42% 23% 43% 26%; }
+    70%     { border-radius: 38% 26% 43% 23% / 29% 39% 25% 42%; }
+    88%     { border-radius: 32% 33% 27% 38% / 34% 30% 38% 27%; }
+  }
+  .card:nth-child(1) { --lean:-2.4deg; width:min(88vw,28.5rem); animation-duration:14s; animation-delay:0s; }
+  .card:nth-child(2) { --lean:-4.6deg; width:min(95vw,35.5rem); animation-duration:19s; animation-delay:-4s; }
+  .card:nth-child(3) { --lean:-1.3deg; width:min(90vw,32rem); animation-duration:16s; animation-delay:-9s; }
+  .card:nth-child(4) { --lean:-3.7deg; width:min(93vw,34rem); animation-duration:21s; animation-delay:-6s; }
+  .card:nth-child(5) { --lean:-5.4deg; width:min(88vw,30rem); animation-duration:17s; animation-delay:-12s; }
+  .card::before, .card::after { content:""; position:absolute; pointer-events:none; }
+  .card::before {
+    inset:-65%; z-index:0;
+    background:
+      radial-gradient(42% 58% at 28% 32%, rgba(120,220,198,0.55), transparent 68%),
+      radial-gradient(46% 54% at 72% 40%, rgba(232,168,210,0.5), transparent 70%),
+      radial-gradient(52% 60% at 48% 78%, rgba(150,190,242,0.5), transparent 72%),
+      conic-gradient(from 90deg at 50% 50%, rgba(236,202,102,0.22), rgba(120,220,198,0.22), rgba(232,168,210,0.22), rgba(150,190,242,0.22), rgba(236,202,102,0.22));
+    mix-blend-mode:soft-light; filter:blur(24px);
+    animation: silkFlow 17s ease-in-out infinite, silkHue 13s linear infinite alternate;
+  }
+  .card::after {
+    inset:-2%; z-index:1;
+    background:
+      radial-gradient(56% 72% at 34% 26%, rgba(255,246,220,0.42), rgba(255,246,220,0) 62%),
+      radial-gradient(30% 46% at 22% 58%, rgba(255,255,255,0.55), transparent 60%),
+      radial-gradient(26% 40% at 72% 36%, rgba(206,255,250,0.5), transparent 62%),
+      radial-gradient(34% 52% at 56% 82%, rgba(255,255,255,0.42), transparent 64%);
+    background-size: 200% 200%, 160% 160%, 150% 150%, 175% 175%;
+    mix-blend-mode: screen;
+    animation: caustics 10s ease-in-out infinite;
+  }
+  @keyframes caustics {
+    0%   { background-position: 0% 0%, 0% 100%, 100% 0%, 50% 100%; opacity:.85; }
+    50%  { background-position: 28% 22%, 22% 66%, 68% 30%, 40% 58%; opacity:1; }
+    100% { background-position: 0% 0%, 0% 100%, 100% 0%, 50% 100%; opacity:.85; }
+  }
+  .card:nth-child(2)::before { animation-delay: -4s, -3s; }
+  .card:nth-child(3)::before { animation-delay: -8.5s, -6s; }
+  .card:nth-child(4)::before { animation-delay: -12s, -9s; }
+  .card:nth-child(5)::before { animation-delay: -6s, -2s; }
+  .card:nth-child(2)::after { animation-delay: -3.5s; }
+  .card:nth-child(3)::after { animation-delay: -7s; }
+  .card:nth-child(4)::after { animation-delay: -5s; }
+  .card:nth-child(5)::after { animation-delay: -8.5s; }
+  @keyframes silkFlow {
+    0%   { transform: translate3d(-10%,-7%,0) rotate(0deg)  scale(1.35); }
+    50%  { transform: translate3d(9%,6%,0)    rotate(9deg)  scale(1.6); }
+    100% { transform: translate3d(-10%,-7%,0) rotate(0deg)  scale(1.35); }
+  }
+  @keyframes silkHue { 0%{filter:blur(26px) hue-rotate(0deg);} 100%{filter:blur(26px) hue-rotate(38deg);} }
+  .card h1, .card p, .card a, .card span { text-shadow: 0 1px 9px rgba(255,255,255,0.55); }
+  @media (prefers-reduced-motion: reduce) {
+    .card { animation: none; transform: rotate(var(--lean)); }
+    .card::before, .card::after { animation: none; }
+  }
 </style>
 </head>
 <body>
 
-<!-- Static striped background -->
-<div style="position:fixed;inset:0;z-index:0;background:repeating-linear-gradient(115deg,#edc95e 0,#edc95e 7%,#5fdf88 7%,#5fdf88 14%,#2bcec4 14%,#2bcec4 21%,#e0a5c9 21%,#e0a5c9 28%,#cdcdcd 28%,#cdcdcd 35%);"></div>
+<!-- The reference image, used directly as the background -->
+<div style="position:fixed;inset:0;z-index:0;background:#242423 url('images/reference-bg.png') 58% 52%/cover no-repeat;transform:scale(2.05);transform-origin:center;"></div>
+
+<!-- Soft vignette so cards lift off the canvas -->
+<div style="position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(125% 92% at 50% 48%, rgba(24,24,23,0) 50%, rgba(24,24,23,0.42) 100%);"></div>
 
 <!-- Vertical card scroller -->
 <div id="scroller" style="position:relative;z-index:1;height:100vh;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;align-items:center;gap:60vh;padding-block:50vh;padding-inline:1.5rem;scroll-snap-type:y mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;">
 
   <!-- JOHN -->
-  <section class="card" style="flex:0 0 auto;width:min(88vw,30rem);max-height:90vh;overflow-y:auto;scroll-snap-align:center;background:rgba(255,255,255,0.5);backdrop-filter:blur(30px) saturate(1.7);-webkit-backdrop-filter:blur(30px) saturate(1.7);border-radius:26px;border:1px solid rgba(255,255,255,0.55);padding:2.7rem 2.2rem 2.4rem;box-shadow:0 44px 120px -28px rgba(28,27,28,0.5),0 0 100px -10px rgba(255,255,255,0.7),0 1px 0 rgba(255,255,255,0.9) inset;text-align:center;scrollbar-width:none;">
-    <h1 style="font-family:'Crimson Pro', Georgia, serif;font-weight:500;font-size:clamp(2.4rem,5vw,3.4rem);line-height:1.05;letter-spacing:-0.03em;margin-top:-0.06em;margin-bottom:1.3rem;color:#141412;">John Ooi</h1>
-    <p style="font-size:1.35rem;color:#3a3934;margin-bottom:0.8rem;line-height:1.35;">mind is the medium;<br>life is the canvas</p>
-    <hr style="border:none;border-top:0.5px solid rgba(40,39,40,0.16);margin:1.3rem 0;">
-    <p style="font-family:'Figtree', sans-serif;font-size:0.78rem;font-weight:300;letter-spacing:0.04em;"><a id="email-link" href="#" style="color:#3a3934;text-decoration:none;">&nbsp;</a></p>
-    <p id="now-playing" style="font-family:'Figtree', sans-serif;font-size:0.72rem;font-weight:300;letter-spacing:0.04em;margin-top:0.7rem;color:rgba(40,39,40,0.5);transition:opacity 0.6s ease;"><span id="np-label">currently listening to:</span><br><span id="np-track" style="color:#3a3934;font-style:italic;">You Can Do Anything by Dana and Alden</span></p>
+  <section class="card" style="flex:0 0 auto;max-height:90vh;overflow:hidden;scroll-snap-align:center;background:radial-gradient(120% 92% at 50% 6%, rgba(255,255,255,0.42), transparent 60%), linear-gradient(150deg, rgba(204,240,248,0.28), rgba(176,220,238,0.12) 48%, rgba(214,246,250,0.28));border:1px solid rgba(255,255,255,0.24);border-radius:46% 54% 57% 43% / 53% 47% 53% 47%;position:relative;isolation:isolate;box-shadow:0 0 64px -8px rgba(150,226,236,0.5), 0 26px 72px -36px rgba(18,58,68,0.42);-webkit-mask-image:radial-gradient(146% 168% at 50% 50%, #000 85%, transparent 100%);mask-image:radial-gradient(146% 168% at 50% 50%, #000 85%, transparent 100%);text-align:center;">
+    <div style="position:relative;z-index:2;padding:3.1rem 3.4rem 3.2rem;overflow-y:auto;max-height:92vh;scrollbar-width:none;text-align:center;">
+      <h1 style="font-family:'Crimson Pro', Georgia, serif;font-weight:400;font-size:clamp(2.4rem,5vw,3.4rem);line-height:1.05;letter-spacing:-0.03em;margin-bottom:1.2rem;color:#0e2c33;">John Ooi</h1>
+      <p style="font-size:1.3rem;color:#1a3c43;margin-bottom:0.9rem;line-height:1.35;">mind is the medium;<br>life is the canvas</p>
+      <hr style="border:none;border-top:0.5px solid rgba(16,44,50,0.16);margin:1.4rem 0;">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:0.03em;"><a id="email-link" href="#" style="color:#1a3c43;text-decoration:none;">&nbsp;</a></p>
+      <p id="now-playing" style="font-family:'IBM Plex Mono',monospace;font-size:0.66rem;letter-spacing:0.05em;margin-top:0.8rem;color:rgba(16,44,50,0.5);transition:opacity 0.6s ease;text-transform:uppercase;"><span id="np-label">currently listening to:</span><span id="np-track" style="display:block;margin-top:0.45rem;color:#1a3c43;text-transform:none;font-family:'Figtree',sans-serif;font-style:italic;letter-spacing:0;font-size:0.8rem;">You Can Do Anything by Dana and Alden</span></p>
+      <div style="margin-top:1.9rem;display:flex;flex-direction:column;align-items:center;gap:0.35rem;font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.24em;text-transform:uppercase;color:rgba(16,44,50,0.48);"><span>scroll for more</span><span style="animation:hint-nudge 1.8s ease-in-out infinite;display:inline-block;">↓</span></div>
+    </div>
   </section>
 
   <!-- ABOUT -->
-  <section class="card" style="flex:0 0 auto;width:min(88vw,30rem);max-height:90vh;overflow-y:auto;scroll-snap-align:center;background:rgba(255,255,255,0.5);backdrop-filter:blur(30px) saturate(1.7);-webkit-backdrop-filter:blur(30px) saturate(1.7);border-radius:26px;border:1px solid rgba(255,255,255,0.55);padding:2.4rem 2.2rem;box-shadow:0 44px 120px -28px rgba(28,27,28,0.5),0 0 100px -10px rgba(255,255,255,0.7),0 1px 0 rgba(255,255,255,0.9) inset;scrollbar-width:none;">
-    <div style="display:flex;align-items:center;gap:0.5rem;font-family:'Figtree', sans-serif;font-size:10px;font-weight:300;letter-spacing:0.22em;text-transform:uppercase;color:rgba(40,39,40,0.5);margin-bottom:1.5rem;"><span style="width:7px;height:7px;border-radius:50%;background:#e0a5c9;display:inline-block;"></span>about</div>
-    <h1 style="font-family:'Crimson Pro', Georgia, serif;font-weight:400;font-size:clamp(1.6rem,4.2vw,2.3rem);line-height:1.05;letter-spacing:-0.025em;margin-bottom:1.4rem;color:#141412;text-wrap:balance;">Meditation, <span style="font-style:italic;">Friendship,</span> &amp; Curiosity.</h1>
-    <hr style="border:none;border-top:0.5px solid rgba(40,39,40,0.16);margin:1.3rem 0;">
-    <p style="font-size:1.02rem;line-height:1.72;color:#3a3934;margin-bottom:0.9rem;text-wrap:pretty;">My name is John.</p>
-    <p style="font-size:1.02rem;line-height:1.72;color:#3a3934;margin-bottom:0.9rem;text-wrap:pretty;">I believe good relationships are essential for societies to thrive, and that our relationship to ourselves is the place to begin.</p>
-    <p style="font-size:1.02rem;line-height:1.72;color:#3a3934;margin-bottom:0.9rem;text-wrap:pretty;">My work sits at the intersection of meditation, creativity, and lived experience.</p>
-    <hr style="border:none;border-top:0.5px solid rgba(40,39,40,0.16);margin:1.3rem 0;clear:both;">
-    <p style="font-family:'Figtree', sans-serif;font-size:0.76rem;font-weight:300;letter-spacing:0.04em;color:rgba(40,39,40,0.62);">lisbon, portugal &nbsp;·&nbsp; <span id="about-email">&nbsp;</span><span id="about-dateline" style="margin-left:0.5rem;color:rgba(40,39,40,0.42);"></span></p>
+  <section class="card" style="flex:0 0 auto;max-height:90vh;overflow:hidden;scroll-snap-align:center;background:radial-gradient(120% 92% at 50% 6%, rgba(255,255,255,0.42), transparent 60%), linear-gradient(150deg, rgba(204,240,248,0.28), rgba(176,220,238,0.12) 48%, rgba(214,246,250,0.28));border:1px solid rgba(255,255,255,0.24);border-radius:46% 54% 57% 43% / 53% 47% 53% 47%;position:relative;isolation:isolate;box-shadow:0 0 64px -8px rgba(150,226,236,0.5), 0 26px 72px -36px rgba(18,58,68,0.42);-webkit-mask-image:radial-gradient(146% 168% at 50% 50%, #000 85%, transparent 100%);mask-image:radial-gradient(146% 168% at 50% 50%, #000 85%, transparent 100%);">
+    <div style="position:relative;z-index:2;padding:3.1rem 3.4rem 3.2rem;overflow-y:auto;max-height:92vh;scrollbar-width:none;text-align:center;">
+      <h1 style="font-family:'Crimson Pro', Georgia, serif;font-weight:400;font-size:clamp(1.6rem,4.2vw,2.3rem);line-height:1.08;letter-spacing:-0.025em;margin-bottom:1.4rem;color:#0e2c33;text-wrap:balance;">Meditation, <span style="font-style:italic;">Friendship,</span> &amp; Curiosity.</h1>
+      <hr style="border:none;border-top:0.5px solid rgba(16,44,50,0.16);margin:1.4rem 0;">
+      <p style="font-size:1.02rem;line-height:1.72;color:#1a3c43;margin-bottom:0.9rem;text-wrap:pretty;">I believe good relationships are essential for societies to thrive, and that our relationship to ourselves is the place to begin.</p>
+      <p style="font-size:1.02rem;line-height:1.72;color:#1a3c43;margin-bottom:0.9rem;text-wrap:pretty;">My work sits at the intersection of meditation, creativity, and lived experience.</p>
+      <hr style="border:none;border-top:0.5px solid rgba(16,44,50,0.16);margin:1.4rem 0;clear:both;">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:0.68rem;letter-spacing:0.06em;text-transform:uppercase;color:rgba(16,44,50,0.55);">currently located in: lisbon, portugal<span id="about-dateline" style="margin-left:0.5rem;color:rgba(16,44,50,0.4);"></span></p>
+    </div>
   </section>
 
   <!-- SPACE TO BE -->
-  <section class="card" style="flex:0 0 auto;width:min(88vw,30rem);max-height:90vh;overflow-y:auto;scroll-snap-align:center;background:rgba(255,255,255,0.5);backdrop-filter:blur(30px) saturate(1.7);-webkit-backdrop-filter:blur(30px) saturate(1.7);border-radius:26px;border:1px solid rgba(255,255,255,0.55);padding:2.4rem 2.2rem;box-shadow:0 44px 120px -28px rgba(28,27,28,0.5),0 0 100px -10px rgba(255,255,255,0.7),0 1px 0 rgba(255,255,255,0.9) inset;scrollbar-width:none;">
-    <div style="display:flex;align-items:center;gap:0.5rem;font-family:'Figtree', sans-serif;font-size:10px;font-weight:300;letter-spacing:0.22em;text-transform:uppercase;color:rgba(40,39,40,0.5);margin-bottom:1.5rem;"><span style="width:7px;height:7px;border-radius:50%;background:#2bcec4;display:inline-block;"></span>one-to-one</div>
-    <div style="display:flex;align-items:center;gap:1.1rem;margin-bottom:1.1rem;">
-      <div style="flex:1;min-width:0;">
-        <h1 style="font-family:'Crimson Pro', Georgia, serif;font-weight:400;font-size:clamp(2rem,5vw,2.9rem);line-height:1.05;letter-spacing:-0.025em;margin-bottom:0.4rem;color:#141412;">space to be</h1>
-        <p style="font-size:1.02rem;line-height:1.55;color:#3a3934;"><strong><span style="font-style:italic;">one-to-one</span></strong> with John</p>
+  <section class="card" style="flex:0 0 auto;max-height:90vh;overflow:hidden;scroll-snap-align:center;background:radial-gradient(120% 92% at 50% 6%, rgba(255,255,255,0.42), transparent 60%), linear-gradient(150deg, rgba(204,240,248,0.28), rgba(176,220,238,0.12) 48%, rgba(214,246,250,0.28));border:1px solid rgba(255,255,255,0.24);border-radius:46% 54% 57% 43% / 53% 47% 53% 47%;position:relative;isolation:isolate;box-shadow:0 0 64px -8px rgba(150,226,236,0.5), 0 26px 72px -36px rgba(18,58,68,0.42);-webkit-mask-image:radial-gradient(146% 168% at 50% 50%, #000 85%, transparent 100%);mask-image:radial-gradient(146% 168% at 50% 50%, #000 85%, transparent 100%);">
+    <div style="position:relative;z-index:2;padding:3.1rem 3.4rem 3.2rem;overflow-y:auto;max-height:92vh;scrollbar-width:none;text-align:center;">
+      <div style="display:flex;flex-direction:column-reverse;align-items:center;gap:1rem;margin-bottom:1.3rem;">
+        <div style="min-width:0;">
+          <h1 style="font-family:'Crimson Pro', Georgia, serif;font-weight:400;font-size:clamp(2rem,5vw,2.9rem);line-height:1.05;letter-spacing:-0.025em;margin-bottom:0.4rem;color:#0e2c33;">space to be</h1>
+          <p style="font-size:1.02rem;line-height:1.55;color:#1a3c43;"><strong><span style="font-style:italic;">one-to-one</span></strong> with John</p>
+        </div>
+        <div style="flex-shrink:0;padding:6px;border:1px solid rgba(16,44,50,0.14);border-radius:6px;background:rgba(255,255,255,0.5);"><img src="images/right-inline.png" alt="Space to Be logo" style="display:block;width:64px;height:64px;object-fit:contain;"></div>
       </div>
-      <img src="images/right-inline.png" alt="Space to Be logo" style="width:76px;height:76px;object-fit:contain;flex-shrink:0;border-radius:8px;">
+      <hr style="border:none;border-top:0.5px solid rgba(16,44,50,0.16);margin:1.4rem 0;">
+      <p style="font-size:1.02rem;line-height:1.72;color:#1a3c43;margin-bottom:0.9rem;text-wrap:pretty;">I offer the kind of support that only arrives through real relationship.</p>
+      <p style="font-size:1.02rem;line-height:1.72;color:#1a3c43;margin-bottom:0.9rem;text-wrap:pretty;">Whether we meet only once or a hundred times, my intention is to support you to meet every kind of change.</p>
+      <hr style="border:none;border-top:0.5px solid rgba(16,44,50,0.16);margin:1.4rem 0;">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:0.82rem;letter-spacing:0.03em;"><a href="https://spacetobe.xyz" target="_blank" rel="noopener">spacetobe.xyz ↗</a></p>
     </div>
-    <hr style="border:none;border-top:0.5px solid rgba(40,39,40,0.16);margin:1.3rem 0;">
-    <p style="font-size:1.02rem;line-height:1.72;color:#3a3934;margin-bottom:0.9rem;text-wrap:pretty;">I offer the kind of support that only arrives through real relationship.</p>
-    <p style="font-size:1.02rem;line-height:1.72;color:#3a3934;margin-bottom:0.9rem;text-wrap:pretty;">Whether we meet only once or a hundred times, my intention is to support you to meet every kind of change.</p>
-    <hr style="border:none;border-top:0.5px solid rgba(40,39,40,0.16);margin:1.3rem 0;">
-    <p style="font-size:1.02rem;line-height:1.72;color:#3a3934;"><a href="https://spacetobe.xyz" target="_blank" rel="noopener">spacetobe.xyz ↗</a></p>
   </section>
 
   <!-- BEINGS CLUB -->
-  <section class="card" style="flex:0 0 auto;width:min(88vw,30rem);max-height:90vh;overflow-y:auto;scroll-snap-align:center;background:rgba(255,255,255,0.5);backdrop-filter:blur(30px) saturate(1.7);-webkit-backdrop-filter:blur(30px) saturate(1.7);border-radius:26px;border:1px solid rgba(255,255,255,0.55);padding:2.4rem 2.2rem;box-shadow:0 44px 120px -28px rgba(28,27,28,0.5),0 0 100px -10px rgba(255,255,255,0.7),0 1px 0 rgba(255,255,255,0.9) inset;scrollbar-width:none;">
-    <div style="display:flex;align-items:center;gap:0.5rem;font-family:'Figtree', sans-serif;font-size:10px;font-weight:300;letter-spacing:0.22em;text-transform:uppercase;color:rgba(40,39,40,0.5);margin-bottom:1.5rem;"><span style="width:7px;height:7px;border-radius:50%;background:#5fdf88;display:inline-block;"></span>community</div>
-    <div style="display:flex;align-items:center;gap:1.1rem;margin-bottom:1.1rem;">
-      <div style="flex:1;min-width:0;">
-        <h1 style="font-family:'Crimson Pro', Georgia, serif;font-weight:400;font-size:clamp(2rem,5vw,2.9rem);line-height:1.05;letter-spacing:-0.025em;margin-bottom:0.4rem;color:#141412;">beings club</h1>
-        <p style="font-size:1.02rem;line-height:1.55;color:#3a3934;"><strong><span style="font-style:italic;">community</span></strong> for the curious.</p>
+  <section class="card" style="flex:0 0 auto;max-height:90vh;overflow:hidden;scroll-snap-align:center;background:radial-gradient(120% 92% at 50% 6%, rgba(255,255,255,0.42), transparent 60%), linear-gradient(150deg, rgba(204,240,248,0.28), rgba(176,220,238,0.12) 48%, rgba(214,246,250,0.28));border:1px solid rgba(255,255,255,0.24);border-radius:46% 54% 57% 43% / 53% 47% 53% 47%;position:relative;isolation:isolate;box-shadow:0 0 64px -8px rgba(150,226,236,0.5), 0 26px 72px -36px rgba(18,58,68,0.42);-webkit-mask-image:radial-gradient(146% 168% at 50% 50%, #000 85%, transparent 100%);mask-image:radial-gradient(146% 168% at 50% 50%, #000 85%, transparent 100%);">
+    <div style="position:relative;z-index:2;padding:3.1rem 3.4rem 3.2rem;overflow-y:auto;max-height:92vh;scrollbar-width:none;text-align:center;">
+      <div style="display:flex;flex-direction:column-reverse;align-items:center;gap:1rem;margin-bottom:1.3rem;">
+        <div style="min-width:0;">
+          <h1 style="font-family:'Crimson Pro', Georgia, serif;font-weight:400;font-size:clamp(2rem,5vw,2.9rem);line-height:1.05;letter-spacing:-0.025em;margin-bottom:0.4rem;color:#0e2c33;">beings club</h1>
+          <p style="font-size:1.02rem;line-height:1.55;color:#1a3c43;"><strong><span style="font-style:italic;">community</span></strong> for the curious.</p>
+        </div>
+        <div style="flex-shrink:0;padding:6px;border:1px solid rgba(16,44,50,0.14);border-radius:6px;background:rgba(255,255,255,0.5);"><img src="images/down-inline.png" alt="Beings Club logo" style="display:block;width:64px;height:64px;object-fit:contain;"></div>
       </div>
-      <img src="images/down-inline.png" alt="Beings Club logo" style="width:76px;height:76px;object-fit:contain;flex-shrink:0;border-radius:8px;">
+      <hr style="border:none;border-top:0.5px solid rgba(16,44,50,0.16);margin:1.4rem 0;">
+      <p style="font-size:1.02rem;line-height:1.72;color:#1a3c43;margin-bottom:0.9rem;text-wrap:pretty;">Space to connect — to oneself, to each other, and to what is possible.</p>
+      <p style="font-size:1.02rem;line-height:1.72;color:#1a3c43;margin-bottom:0.9rem;text-wrap:pretty;">Beings Club has a simple format: a period of individual practice held in a shared field, time for breakout conversations, and a closing that brings everyone back together.</p>
+      <hr style="border:none;border-top:0.5px solid rgba(16,44,50,0.16);margin:1.4rem 0;">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:0.82rem;letter-spacing:0.03em;"><a href="https://beingsclub.com" target="_blank" rel="noopener">beingsclub.com ↗</a></p>
     </div>
-    <hr style="border:none;border-top:0.5px solid rgba(40,39,40,0.16);margin:1.3rem 0;">
-    <p style="font-size:1.02rem;line-height:1.72;color:#3a3934;margin-bottom:0.9rem;text-wrap:pretty;">Space to connect — to oneself, to each other, and to what is possible.</p>
-    <p style="font-size:1.02rem;line-height:1.72;color:#3a3934;margin-bottom:0.9rem;text-wrap:pretty;">Beings Club has a simple format: a period of individual practice held in a shared field, time for breakout conversations, and a closing that brings everyone back together.</p>
-    <hr style="border:none;border-top:0.5px solid rgba(40,39,40,0.16);margin:1.3rem 0;">
-    <p style="font-size:1.02rem;line-height:1.72;color:#3a3934;"><a href="https://beingsclub.com" target="_blank" rel="noopener">beingsclub.com ↗</a></p>
   </section>
 
   <!-- WONDERFOOL -->
-  <section class="card" style="flex:0 0 auto;width:min(88vw,30rem);max-height:90vh;overflow-y:auto;scroll-snap-align:center;background:rgba(255,255,255,0.5);backdrop-filter:blur(30px) saturate(1.7);-webkit-backdrop-filter:blur(30px) saturate(1.7);border-radius:26px;border:1px solid rgba(255,255,255,0.55);padding:2.4rem 2.2rem;box-shadow:0 44px 120px -28px rgba(28,27,28,0.5),0 0 100px -10px rgba(255,255,255,0.7),0 1px 0 rgba(255,255,255,0.9) inset;scrollbar-width:none;">
-    <div style="display:flex;align-items:center;gap:0.5rem;font-family:'Figtree', sans-serif;font-size:10px;font-weight:300;letter-spacing:0.22em;text-transform:uppercase;color:rgba(40,39,40,0.5);margin-bottom:1.5rem;"><span style="width:7px;height:7px;border-radius:50%;background:#edc95e;display:inline-block;"></span>words</div>
-    <div style="display:flex;align-items:center;gap:1.1rem;margin-bottom:1.1rem;">
-      <div style="flex:1;min-width:0;">
-        <h1 style="font-family:'Crimson Pro', Georgia, serif;font-weight:400;font-size:clamp(2rem,5vw,2.9rem);line-height:1.05;letter-spacing:-0.025em;margin-bottom:0.4rem;color:#141412;">wonderfool</h1>
-        <p style="font-size:1.02rem;line-height:1.55;color:#3a3934;"><strong><span style="font-style:italic;">words and conversation</span></strong> for wonderfools.</p>
+  <section class="card" style="flex:0 0 auto;max-height:90vh;overflow:hidden;scroll-snap-align:center;background:radial-gradient(120% 92% at 50% 6%, rgba(255,255,255,0.42), transparent 60%), linear-gradient(150deg, rgba(204,240,248,0.28), rgba(176,220,238,0.12) 48%, rgba(214,246,250,0.28));border:1px solid rgba(255,255,255,0.24);border-radius:46% 54% 57% 43% / 53% 47% 53% 47%;position:relative;isolation:isolate;box-shadow:0 0 64px -8px rgba(150,226,236,0.5), 0 26px 72px -36px rgba(18,58,68,0.42);-webkit-mask-image:radial-gradient(146% 168% at 50% 50%, #000 85%, transparent 100%);mask-image:radial-gradient(146% 168% at 50% 50%, #000 85%, transparent 100%);">
+    <div style="position:relative;z-index:2;padding:3.1rem 3.4rem 3.2rem;overflow-y:auto;max-height:92vh;scrollbar-width:none;text-align:center;">
+      <div style="display:flex;flex-direction:column-reverse;align-items:center;gap:1rem;margin-bottom:1.3rem;">
+        <div style="min-width:0;">
+          <h1 style="font-family:'Crimson Pro', Georgia, serif;font-weight:400;font-size:clamp(2rem,5vw,2.9rem);line-height:1.05;letter-spacing:-0.025em;margin-bottom:0.4rem;color:#0e2c33;">wonderfool</h1>
+          <p style="font-size:1.02rem;line-height:1.55;color:#1a3c43;"><strong><span style="font-style:italic;">words and conversation</span></strong> for wonderfools.</p>
+        </div>
+        <div style="flex-shrink:0;padding:6px;border:1px solid rgba(16,44,50,0.14);border-radius:6px;background:rgba(255,255,255,0.5);"><img src="images/left-inline.png" alt="Wonderfool logo" style="display:block;width:64px;height:64px;object-fit:contain;"></div>
       </div>
-      <img src="images/left-inline.png" alt="Wonderfool logo" style="width:76px;height:76px;object-fit:contain;flex-shrink:0;border-radius:8px;">
+      <hr style="border:none;border-top:0.5px solid rgba(16,44,50,0.16);margin:1.4rem 0;">
+      <p style="font-size:1.02rem;line-height:1.72;color:#1a3c43;margin-bottom:0.9rem;text-wrap:pretty;">A place where I share conversations I'm having with others and myself in written and audio forms.</p>
+      <p id="wf-latest" style="display:none;font-size:0.95rem;color:#1a3c43;"><span style="font-family:'IBM Plex Mono',monospace;font-size:0.66rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(16,44,50,0.45);display:block;margin-bottom:0.35rem;">latest</span><a id="wf-latest-link" href="#" target="_blank" rel="noopener" style="font-style:italic;"></a></p>
+      <hr style="border:none;border-top:0.5px solid rgba(16,44,50,0.16);margin:1.4rem 0;">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:0.82rem;letter-spacing:0.03em;"><a href="https://wonderfool.substack.com" target="_blank" rel="noopener">wonderfool on substack ↗</a></p>
     </div>
-    <hr style="border:none;border-top:0.5px solid rgba(40,39,40,0.16);margin:1.3rem 0;">
-    <p style="font-size:1.02rem;line-height:1.72;color:#3a3934;margin-bottom:0.9rem;text-wrap:pretty;">A place where I share conversations I'm having with others and myself in written and audio forms.</p>
-    <p id="wf-latest" style="display:none;font-size:0.95rem;color:#3a3934;"><span style="font-family:'Figtree', sans-serif;font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(40,39,40,0.45);display:block;margin-bottom:0.3rem;">latest</span><a id="wf-latest-link" href="#" target="_blank" rel="noopener" style="font-style:italic;"></a></p>
-    <hr style="border:none;border-top:0.5px solid rgba(40,39,40,0.16);margin:1.3rem 0;">
-    <p style="font-size:1.02rem;line-height:1.72;color:#3a3934;"><a href="https://wonderfool.substack.com" target="_blank" rel="noopener">wonderfool on substack ↗</a></p>
   </section>
 
 </div>
 
 <!-- Scroll hint -->
-<div id="scroll-hint" style="position:fixed;bottom:1.6rem;left:50%;transform:translateX(-50%);z-index:2;display:flex;align-items:center;gap:0.5rem;font-family:'Figtree', sans-serif;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(40,39,40,0.6);background:rgba(255,255,255,0.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:6px 12px;border-radius:999px;pointer-events:none;transition:opacity 0.6s ease;">scroll<span style="animation:hint-nudge 1.8s ease-in-out infinite;display:inline-block;">↓</span></div>
+<div id="scroll-hint" style="position:fixed;bottom:1.6rem;left:50%;transform:translateX(-50%);z-index:2;display:flex;align-items:center;gap:0.5rem;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.82);text-shadow:0 1px 8px rgba(0,0,0,0.55);pointer-events:none;transition:opacity 0.6s ease;">scroll<span style="animation:hint-nudge 1.8s ease-in-out infinite;display:inline-block;">↓</span></div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   var scroller = document.getElementById('scroller');
 
   if (scroller) {
-    // Center the first card in the viewport on load.
     var centerFirst = function () {
       var first = scroller.querySelector('.card');
       if (!first) return;
@@ -147,7 +219,6 @@ document.addEventListener('DOMContentLoaded', function () {
     requestAnimationFrame(centerFirst);
     window.addEventListener('load', centerFirst);
 
-    // Arrow-key nav between cards (vertical).
     var cardH = function () {
       var c = scroller.querySelector('.card');
       return c ? c.getBoundingClientRect().height + 40 : 500;
@@ -157,7 +228,6 @@ document.addEventListener('DOMContentLoaded', function () {
       if (e.key === 'ArrowUp')   { e.preventDefault(); scroller.scrollBy({ top: -cardH(), behavior: 'smooth' }); }
     });
 
-    // Fade the scroll hint away once the user has scrolled.
     var hint = document.getElementById('scroll-hint');
     var hidden = false;
     scroller.addEventListener('scroll', function () {
@@ -180,8 +250,6 @@ document.addEventListener('DOMContentLoaded', function () {
     var addr = 'john' + '@' + 'spacetobe' + '.' + 'xyz';
     var a = document.getElementById('email-link');
     if (a) { a.href = 'mailto:' + addr; a.textContent = addr; }
-    var b = document.getElementById('about-email');
-    if (b) b.textContent = addr;
   })();
 
   // — Wonderfool latest post (silent fail) —
@@ -225,6 +293,43 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchNowPlaying();
     setInterval(fetchNowPlaying, 60000);
     document.addEventListener('visibilitychange', function () { if (!document.hidden) fetchNowPlaying(); });
+  })();
+
+  // — Pointer-reactive 3D energy fields —
+  (function () {
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+    if (!cards.length) return;
+    var leans = [-2.4, -4.6, -1.3, -3.7, -5.4];
+    var phase = [0, 1.4, 2.7, 4.1, 1.9];
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var tf = function (rx, ry, lean, sk, sx, sy) {
+      return 'perspective(1300px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg) rotate(' + lean + 'deg) skewX(' + sk.toFixed(2) + 'deg) scale(' + sx.toFixed(3) + ',' + sy.toFixed(3) + ')';
+    };
+    if (reduce) { cards.forEach(function (c, i) { c.style.transform = tf(0, 0, leans[i] || 0, 0, 1, 1); }); return; }
+    var tmx = 0, tmy = 0, mx = 0, my = 0;
+    window.addEventListener('pointermove', function (e) {
+      tmx = (e.clientX / window.innerWidth - 0.5) * 2;
+      tmy = (e.clientY / window.innerHeight - 0.5) * 2;
+    }, { passive: true });
+    window.addEventListener('pointerout', function (e) { if (!e.relatedTarget) { tmx = 0; tmy = 0; } }, { passive: true });
+    var t0 = performance.now();
+    function frame(now) {
+      var t = (now - t0) / 1000;
+      mx += (tmx - mx) * 0.07;
+      my += (tmy - my) * 0.07;
+      for (var i = 0; i < cards.length; i++) {
+        var idleY = Math.sin(t * 0.5 + phase[i]) * 5.5;
+        var idleX = Math.cos(t * 0.4 + phase[i]) * 2.2;
+        var ry = idleY + mx * 17;
+        var rx = idleX - my * 12;
+        var sk = Math.sin(t * 0.62 + phase[i]) * 1.3;
+        var sx = 1 + Math.sin(t * 0.34 + phase[i]) * 0.022;
+        var sy = 1 + Math.cos(t * 0.41 + phase[i] * 1.3) * 0.026;
+        cards[i].style.transform = tf(rx, ry, leans[i] || 0, sk, sx, sy);
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
   })();
 
   // — Service worker (offline support) —

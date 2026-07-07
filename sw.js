@@ -1,12 +1,15 @@
 // Service worker — caches the page + its images so j-hn.info works offline.
 // Cache name is versioned; bump it when shipping changes that should invalidate.
-const CACHE = 'j-hn-v3';
+const CACHE = 'j-hn-v4';
 const ASSETS = [
   '/',
   '/index.html',
+  '/images/reference-bg.png',
   '/images/right-inline.png',
   '/images/left-inline.png',
   '/images/down-inline.png',
+  '/images/cursor-arrow.png',
+  '/images/cursor-hand.png',
   '/images/favicon-32.png',
   '/images/favicon-180.png',
   '/images/favicon-512.png',

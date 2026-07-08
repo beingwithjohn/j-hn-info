@@ -39,7 +39,7 @@
   }
   a { color: #14504a; text-decoration: none; }
   .page {
-    height: 100vh; overflow: hidden;
+    height: 100vh; height: 100svh; overflow: hidden;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     gap: clamp(1.4rem, 3.4vh, 2.4rem);
     padding: clamp(1.5rem, 4vh, 3rem) 1.5rem;
@@ -119,6 +119,15 @@
   #letter button:hover { background: #14504a; color: #f5f4f0; }
   /* preserve the zero-scroll viewport on short screens */
   @media (max-height: 640px) { #letter { display: none; } }
+  /* phones: fit if possible, scroll gracefully if not — never clip the footer */
+  @media (max-width: 600px) {
+    html, body { overflow-y: auto; }
+    .page { height: auto; min-height: 100svh; overflow: visible;
+      justify-content: flex-start; gap: 1.3rem; padding: 1.5rem 1.25rem 2.2rem; }
+    #artwork { max-height: 24vh; }
+    footer { row-gap: 0.45rem; }
+    .footer-meta { flex-wrap: wrap; row-gap: 0.45rem; }
+  }
   footer {
     margin-top: 1.4rem; display: flex; flex-wrap: wrap; align-items: baseline;
     justify-content: space-between; gap: 0.5rem 1.2rem;

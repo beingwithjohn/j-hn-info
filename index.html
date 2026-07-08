@@ -227,12 +227,18 @@ document.addEventListener('DOMContentLoaded', function () {
       badge.style.color = '#8a8983'; badge.style.borderColor = '#a5a49e';
     }
     if (!touch) {
+      // desktop: hover on the name, focus for keyboard users
       wrap.addEventListener('mouseenter', show);
       wrap.addEventListener('mouseleave', hide);
+      badge.addEventListener('focus', show);
+      badge.addEventListener('blur', hide);
+      badge.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); open ? hide() : show(); });
+    } else {
+      // touch: a single tap anywhere on the name or badge toggles.
+      // (no focus handler here — iOS fires focus+click on one tap, which
+      // made the first tap open-then-close immediately)
+      wrap.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); open ? hide() : show(); });
     }
-    badge.addEventListener('focus', show);
-    badge.addEventListener('blur', function () { if (!touch) hide(); });
-    badge.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); open ? hide() : show(); });
     if (closeBtn) closeBtn.addEventListener('click', function (e) { e.stopPropagation(); hide(); });
     document.addEventListener('click', function (e) {
       if (open && !box.contains(e.target) && !wrap.contains(e.target)) hide();

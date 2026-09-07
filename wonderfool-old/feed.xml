@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+<title>Wonderfool (OLD — we’ve moved)</title>
+<link>https://open.spotify.com/show/76dQ2wEAlHByA0dCkoe2sq</link>
+<description>This Spotify page has moved. Follow Wonderfool with John Ooi for all new episodes: https://open.spotify.com/show/76dQ2wEAlHByA0dCkoe2sq . This page keeps the moving announcement for existing followers. Wonderfool continues at https://wonderfool.substack.com.</description>
+<language>en</language>
+<copyright>John Ooi</copyright>
+<itunes:author>John Ooi</itunes:author>
+<itunes:owner><itunes:name>John Ooi</itunes:name><itunes:email>john@spacetobe.xyz</itunes:email></itunes:owner>
+<itunes:explicit>false</itunes:explicit>
+<itunes:type>episodic</itunes:type>
+<itunes:category text="Religion &amp; Spirituality"><itunes:category text="Spirituality"/></itunes:category>
+<itunes:image href="https://j-hn.info/wonderfool-old/cover.jpg"/>
+<image><url>https://j-hn.info/wonderfool-old/cover.jpg</url><title>Wonderfool (OLD — we’ve moved)</title><link>https://open.spotify.com/show/76dQ2wEAlHByA0dCkoe2sq</link></image>
+<atom:link href="https://j-hn.info/wonderfool-old/feed.xml" rel="self" type="application/rss+xml"/>
+<item>
+<title>Wonderfool is moving on Spotify</title>
+<description>We have moved. Follow Wonderfool’s continuing Spotify home for all future episodes: https://open.spotify.com/show/76dQ2wEAlHByA0dCkoe2sq . Wonderfool continues at https://wonderfool.substack.com. Existing Substack subscriptions remain there.</description>
+<link>https://open.spotify.com/show/76dQ2wEAlHByA0dCkoe2sq</link>
+<guid isPermaLink="false">substack:post:214565857</guid>
+<pubDate>Mon, 07 Sep 2026 12:42:09 GMT</pubDate>
+<enclosure url="https://j-hn.info/wonderfool-old/announcement.mp3" length="1045778" type="audio/mpeg"/>
+<itunes:author>John Ooi</itunes:author><itunes:explicit>false</itunes:explicit><itunes:duration>87</itunes:duration>
+<itunes:episodeType>full</itunes:episodeType>
+</item>
+</channel></rss>

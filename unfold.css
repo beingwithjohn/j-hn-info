@@ -20,3 +20,42 @@
 html:not(.enhanced) .space-feature{display:none}
 @media(min-width:861px){.transmission{width:min(100%,calc((100svh - 310px)*1.4996));margin-left:auto}.visual-stack.expanded .transmission{margin-left:auto}}
 .circle-flight{position:fixed;z-index:8;display:block;color:var(--ink);pointer-events:none;overflow:visible}
+
+/* A quiet daily mark. Its reading unfolds in the same document as the artwork. */
+.dateline{min-height:1em}
+.dateline.has-hexagram{margin-bottom:calc(clamp(1rem,1.55vw,1.75rem) - 52px)}
+.daily-hexagram{width:min(100%,21rem);margin-left:auto;font-size:1rem;font-weight:400;line-height:1.6;letter-spacing:normal;text-transform:none;text-align:left;scroll-margin-top:28px}
+.daily-hexagram>summary{position:relative;list-style:none;cursor:pointer;width:52px;height:52px;margin-left:auto}
+.hexagram-symbol{position:absolute;inset:0 0 auto auto;display:block;width:36px;height:auto;fill:currentColor;transition:opacity 220ms ease}
+.daily-hexagram>summary:focus-visible{outline:none}
+.daily-hexagram>summary:focus-visible .hexagram-symbol{outline:2px solid currentColor;outline-offset:8px}
+.daily-hexagram>summary:hover .hexagram-symbol{opacity:.6}
+.hexagram-copy{padding-top:28px}
+.hexagram-number,.hexagram-trigrams,.hexagram-note{font-family:'JetBrains Mono',monospace;font-size:.8125rem;line-height:1.65;color:var(--quiet)}
+.hexagram-number{margin-bottom:10px}
+.hexagram-name{font-size:clamp(1.6rem,2.1vw,2rem);font-weight:500;line-height:1.12;letter-spacing:-.045em}
+.hexagram-trigrams{margin-top:14px;color:var(--ink)}
+.hexagram-note{margin-top:22px}
+.hexagram-copy .onward{font-size:.8125rem}
+@media(max-width:860px){.dateline.has-hexagram{margin-bottom:32px}.daily-hexagram>summary{width:44px;height:44px}.hexagram-symbol{width:32px}.hexagram-copy{padding-top:24px}}
+
+/* The original artwork assembly covers preparation of the whole homepage. */
+.site-intro{display:none;position:fixed;z-index:9999;inset:0;place-items:center;background:var(--paper);overflow:hidden;pointer-events:none}
+html.site-loading .site-intro,html.intro-leaving .site-intro{display:grid}
+html.site-loading{cursor:wait}
+html.site-loading .page,html.site-loading .utility,html.site-loading .skip{visibility:hidden;opacity:0;transform:translateY(8px)}
+html.intro-leaving .site-intro{opacity:0;transition:opacity 480ms var(--ease)}
+html.intro-leaving .page,html.intro-leaving .utility{opacity:1;transform:none;transition:opacity 600ms var(--ease),transform 700ms var(--ease)}
+.loader-system{position:relative;width:min(64vw,820px);aspect-ratio:3749/2500}
+.loader-art{position:absolute;inset:8%;overflow:visible}
+.loader-piece{position:absolute;inset:0;display:block;background:#272727 url('images/reference-bg.png') center/cover no-repeat;opacity:0;will-change:transform,opacity}
+.loader-piece:nth-child(1){clip-path:polygon(0 0,18% 0,23% 100%,0 100%);transform:translate(-30%,-26%) rotate(-6deg) scale(.92);animation-delay:180ms}
+.loader-piece:nth-child(2){clip-path:polygon(18% 0,41% 0,37% 100%,23% 100%);transform:translate(-13%,30%) rotate(4.5deg) scale(1.04);animation-delay:260ms}
+.loader-piece:nth-child(3){clip-path:polygon(41% 0,60% 0,66% 100%,37% 100%);transform:translate(4%,-36%) rotate(-2.5deg) scale(.88);animation-delay:340ms}
+.loader-piece:nth-child(4){clip-path:polygon(60% 0,83% 0,78% 100%,66% 100%);transform:translate(18%,22%) rotate(5.5deg) scale(.97);animation-delay:420ms}
+.loader-piece:nth-child(5){clip-path:polygon(83% 0,100% 0,100% 100%,78% 100%);transform:translate(38%,-20%) rotate(-7deg) scale(1.06);animation-delay:500ms}
+.intro-art-ready .loader-piece{animation-name:loader-piece-in;animation-duration:820ms;animation-timing-function:var(--ease);animation-fill-mode:forwards}
+.intro-art-ready.intro-still .loader-piece{opacity:1;transform:none;animation:none}
+@keyframes loader-piece-in{65%{opacity:1}to{opacity:1;transform:none}}
+@media(max-width:860px){.loader-system{width:calc(100vw - 36px)}}
+@media(prefers-reduced-motion:reduce){.intro-art-ready .loader-piece{opacity:1;transform:none;animation:none}.site-loading .page,.site-loading .utility{transform:none}}

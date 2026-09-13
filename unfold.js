@@ -265,6 +265,7 @@
   window.addEventListener('resize', finishMotion, {passive: true});
   reduced.addEventListener?.('change', finishMotion);
   document.fonts?.ready.then(finishMotion);
+  window.addEventListener('jhn:ready', () => { finishMotion(); restoreRoute(true); });
   window.addEventListener('popstate', () => restoreRoute());
   window.addEventListener('hashchange', () => restoreRoute());
   document.documentElement.classList.add('enhanced');

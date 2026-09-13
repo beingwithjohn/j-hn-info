@@ -3,6 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preload" as="image" href="images/reference-bg.png" fetchpriority="high">
+  <link rel="preload" as="image" href="images/john-portrait.jpeg">
+  <link rel="preload" as="image" href="images/john-mountains.jpeg">
+  <link rel="preload" as="image" href="images/beings-logo-outline.svg">
+  <script>
+  // Fail open even if the deferred entry script never downloads or runs.
+  (() => {
+    const root = document.documentElement;
+    const entry = window.jhnEntry = {closed: false};
+    entry.finish = () => {
+      if (entry.closed) return;
+      entry.closed = true;
+      clearTimeout(entry.deadline);
+      root.classList.remove('site-loading', 'intro-art-ready', 'intro-still', 'intro-leaving');
+      root.removeAttribute('aria-busy');
+      document.getElementById('site-intro')?.remove();
+      window.dispatchEvent(new Event('jhn:ready'));
+    };
+    entry.deadline = setTimeout(entry.finish, 10000);
+    root.classList.add('site-loading');
+    root.setAttribute('aria-busy', 'true');
+    window.addEventListener('pageshow', event => { if (event.persisted) entry.finish(); });
+  })();
+  </script>
 <title>John Ooi · Being + Curiosity</title>
 <meta name="description" content="John Ooi is a meditation teacher, spiritual friend, writer and creative counsel. Explore Space to Be, Beings Club, ARC Network, Wonderfool and project work.">
 <meta property="og:type" content="website">
@@ -63,11 +87,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@300;400&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="unfold.css">
-  <script src="unfold.js" defer></script>
-  <script src="unfold-ambient.js" defer></script>
+  <link rel="stylesheet" href="unfold.css?v=hexagram-2">
+  <script src="daily-hexagram.js?v=1" defer></script>
+  <script src="unfold.js?v=entry-1" defer></script>
+  <script src="entry.js?v=entry-1" defer></script>
+  <script src="unfold-ambient.js?v=drone-pure-major-5" defer></script>
 </head>
 <body>
+  <div class="site-intro" id="site-intro" aria-hidden="true">
+    <div class="loader-system">
+      <div class="loader-art"><span class="loader-piece"></span><span class="loader-piece"></span><span class="loader-piece"></span><span class="loader-piece"></span><span class="loader-piece"></span></div>
+    </div>
+  </div>
   <a class="skip" href="#projects">Skip to work and projects</a>
   <main class="page" id="home">
     <div class="left-rail">
@@ -86,7 +117,7 @@
         <details class="project" id="beings-club">
           <summary><span class="work-title">Beings Club</span><span class="work-desc">A realisationhouse for the curious</span></summary>
           <div class="disclosure-body"><div class="project-copy">
-            <img class="beings-logo" src="images/beings-logo-outline.svg" alt="" width="180" height="90" loading="lazy">
+            <img class="beings-logo" src="images/beings-logo-outline.svg" alt="" width="180" height="90" loading="eager">
             <p>I started Beings Club in 2025 to bring curious people with different backgrounds and ways of seeing into spontaneously unfolding conversations. The hope is to discover possibilities we wouldn’t have found alone.</p>
             <p>We begin with a guided curiosity practice, intended to create shared ground and support what might unfold between us. Curiosity here means an orientation to experience that is open to discovery. We turn it inwards, then offer it to one another.</p>
             <p class="practical">For the benefit of all beings</p>
@@ -125,19 +156,29 @@
       <h1 class="name-home"><a class="wordmark" href="#story" aria-label="About John Ooi" aria-controls="story"><span class="wordmark-name" aria-hidden="true"><span>J</span><span>O</span><span>H</span><span>N</span><span class="ooi">Ooi</span></span></a></h1>
     </div>
     <div class="right-rail">
-      <p class="dateline">Being + Curiosity</p>
+      <div class="dateline">
+        <details class="daily-hexagram" id="daily-hexagram" hidden>
+          <summary aria-label="Today’s I Ching hexagram"><svg class="hexagram-symbol" data-hexagram-symbol viewBox="0 0 60 56" aria-hidden="true"></svg></summary>
+          <div class="disclosure-body"><div class="hexagram-copy">
+            <p class="hexagram-number">I Ching</p>
+            <h2 class="hexagram-name"></h2>
+            <p class="hexagram-trigrams"></p>
+            <p class="hexagram-note">A daily hexagram from the Book of Changes. The same one for everyone, changing at midnight UTC.</p>
+          </div></div>
+        </details>
+      </div>
       <div class="visual-stack">
-        <a class="transmission" id="artwork-button" href="#story" aria-label="About John" aria-controls="story"><img id="artwork" src="images/reference-bg.png" alt="Colourful diagonal striped artwork" width="3749" height="2500"></a>
+        <a class="transmission" id="artwork-button" href="#story" aria-label="About John" aria-controls="story"><img id="artwork" src="images/reference-bg.png" alt="Colourful diagonal striped artwork" width="3749" height="2500" fetchpriority="high"></a>
         <details class="feature story" id="story">
           <summary class="feature-summary">About John Ooi</summary>
           <div class="disclosure-body"><div class="feature-inner">
             <header class="story-heading"><img class="portrait" src="images/john-portrait.jpeg" alt="John smiling" width="400" height="400"><h2>John Ooi</h2></header>
             <p>At the heart of my work is an unfolding relationship with life.</p>
             <p>I grew up in Liverpool, in a Roman Catholic family, and went to a Jewish primary school. My father is Malay Chinese and my mother is English. I knew what was in front of me wasn’t the only possible world.</p>
-            <p>I’ve learnt that we need each other. People bring out different parts of each other. We support one another by simply being who we are. I get to give and I get to receive in return, to be curious, to learn, and to discover.</p>
+            <p>I’ve learnt that we need each other. People bring out different parts of each other. We support one another by simply being who we are. I get to give and I get to receive, to be curious, to learn, and to discover.</p>
             <details class="chapter" id="more-story"><summary>a little more of the story <span aria-hidden="true">+</span></summary><div class="disclosure-body"><div class="chapter-copy">
               <p>I travelled as a child, visiting family in Malaysia. Later, an awareness of mortality and ageing drew me towards travel. I love to learn from different cultures and have experiences I couldn’t have at home.</p>
-              <figure class="life-photo"><img src="images/john-mountains.jpeg" alt="John at sunrise in the Huangshan Mountains, wearing an orange puffer jacket" width="3120" height="2080" loading="lazy"><figcaption>Huangshan, at sunrise. I went because my grandmother suggested I should.</figcaption></figure>
+              <figure class="life-photo"><img src="images/john-mountains.jpeg" alt="John at sunrise in the Huangshan Mountains, wearing an orange puffer jacket" width="3120" height="2080" loading="eager"><figcaption>Huangshan, at sunrise. I went because my grandmother suggested I should.</figcaption></figure>
               <p>I went to medical school at UCL in London. An identity that had served me well at school didn’t translate to my new life there. I turned to meditation for help with anxiety and panic, and learnt that I was giving my thoughts too much power.</p>
               <p>During a break from medical school, I volunteered at a school in Nepal, teaching English and science. I asked a child reading from a textbook to use their inside voice, then became curious about where it was for them. It wasn’t in their head. It was in their chest, where their heart was.</p>
               <p>There are many ways to experience experience.</p>

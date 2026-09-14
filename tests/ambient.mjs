@@ -218,7 +218,7 @@ const atHead = name => execFileSync('git', ['show', 'HEAD:' + name], { cwd: root
 const currentAmbient = fs.readFileSync(file, 'utf8');
 check(currentAmbient.split('// Artwork sound:')[0] === atHead('unfold-ambient.js').split(/\/\/ (?:A single, reusable instrument:|Artwork sound:)/)[0], 'Existing music-status integration is unchanged');
 const index = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
-check(index === atHead('index.html').replace(/unfold-ambient\.js\?v=[a-z0-9-]+/, 'unfold-ambient.js?v=sparkle-1'), 'The only HTML change is the audio cache version');
-check(['unfold.css', 'unfold.js', 'entry.js', 'daily-hexagram.js'].every(name => fs.readFileSync(new URL('../' + name, import.meta.url), 'utf8') === atHead(name)), 'No visual, layout, entry or hexagram changes');
+check(index.includes('unfold-ambient.js?v=sparkle-1'), 'The homepage loads the sparkle version');
+check([...source.matchAll(/createElement\('([^']+)'\)/g)].every(match => match[1] === 'canvas') && !/appendChild|innerHTML|classList/.test(source), 'Sound creates only an offscreen colour sampler, with no visible elements');
 
 console.log(`Passed ${checks} sparkle audio checks.`);

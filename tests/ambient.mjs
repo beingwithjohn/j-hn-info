@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import { execFileSync } from 'node:child_process';
 
 const file = new URL('../unfold-ambient.js', import.meta.url);
-const source = fs.readFileSync(file, 'utf8').split('// A single, reusable instrument:')[1];
+const source = fs.readFileSync(file, 'utf8').split('// Artwork sound:')[1];
 let checks = 0;
 function check(condition, label) {
   assert.ok(condition, label);
@@ -26,6 +27,7 @@ function fixture({ hold = true, stereo = true, supported = true, rejectResume = 
     cancelScheduledValues(time) { this.calls.push(['cancel', time]); }
     setValueAtTime(value, time) { this.value = value; this.calls.push(['value', value, time]); }
     linearRampToValueAtTime(value, time) { this.value = value; this.calls.push(['linear', value, time]); }
+    exponentialRampToValueAtTime(value, time) { this.value = value; this.calls.push(['exponential', value, time]); }
     setTargetAtTime(value, time, constant) { this.value = value; this.calls.push(['target', value, time, constant]); }
   }
   if (!hold) Param.prototype.cancelAndHoldAtTime = undefined;
@@ -39,8 +41,9 @@ function fixture({ hold = true, stereo = true, supported = true, rejectResume = 
       const node = { kind, connections: [], starts: 0, stops: 0 };
       for (const name of ['gain', 'frequency', 'detune', 'Q', 'pan', 'threshold', 'knee', 'ratio', 'attack', 'release']) node[name] = new Param();
       node.connect = target => { node.connections.push(target); return target; };
-      node.start = () => node.starts++;
-      node.stop = () => node.stops++;
+      node.start = time => { node.starts++; node.startAt = time; };
+      node.stop = time => { node.stops++; node.stopAt = time; };
+      node.disconnect = () => { node.disconnected = true; node.connections = []; };
       this.nodes.push(node);
       return node;
     }
@@ -54,6 +57,13 @@ function fixture({ hold = true, stereo = true, supported = true, rejectResume = 
     createBuffer(channels, frames) {
       const data = Array.from({ length: channels }, () => new Float32Array(frames));
       return { getChannelData: i => data[i] };
+    }
+    tick(seconds) {
+      this.currentTime += seconds;
+      for (const node of this.nodes) if (node.kind === 'oscillator' && !node.ended && node.stopAt <= this.currentTime) {
+        node.ended = true;
+        node.onended?.();
+      }
     }
     async resume() {
       if (rejectResume) throw new Error('Autoplay blocked');
@@ -70,7 +80,7 @@ function fixture({ hold = true, stereo = true, supported = true, rejectResume = 
   const document = events({ hidden: false, createElement: () => canvas,
     getElementById: id => id === 'artwork' ? artwork : button });
   const window = events(supported ? { AudioContext: Context } : {});
-  vm.runInNewContext('// A single, reusable instrument:' + source, {
+  vm.runInNewContext('// Artwork sound:' + source, {
     window, document, console,
     setTimeout: (fn, delay) => { timers.set(++timerId, { fn, delay }); return timerId; },
     clearTimeout: id => timers.delete(id)
@@ -83,6 +93,7 @@ function fixture({ hold = true, stereo = true, supported = true, rejectResume = 
     flush: async () => { for (let i = 0; i < 5; i++) await Promise.resolve(); },
     advance: async () => {
       const active = [...timers.values()]; timers.clear();
+      contexts.forEach(ctx => ctx.tick(1));
       active.forEach(t => t.fn());
       await Promise.resolve();
     },
@@ -91,104 +102,123 @@ function fixture({ hold = true, stereo = true, supported = true, rejectResume = 
 }
 
 const app = fixture();
-check(app.contexts.length === 0, 'No audio context, graph, or autoplay on page load');
-check(app.canvas.width === 1200 && app.canvas.height === 800, 'Colour sampler avoids allocating a full-size artwork canvas');
+const tones = ctx => ctx.nodes.filter(n => n.kind === 'oscillator');
+const alive = ctx => tones(ctx).filter(n => !n.ended);
+check(app.contexts.length === 0, 'No audio context, graph or autoplay on page load');
+check(app.canvas.width === 1200 && app.canvas.height === 800, 'Colour sampling remains downscaled');
 app.hover();
 check(app.contexts.length === 0, 'Hover before a gesture stays silent');
 app.unlock(); await app.flush();
 const ctx = app.contexts[0];
-const tones = ctx.nodes.filter(n => n.kind === 'oscillator' && n.frequency.value > 20);
-const envelope = ctx.nodes[0];
-check(ctx.state === 'running' && tones.length === 9, 'First click starts one major triad across three octaves');
-check(ctx.nodes.filter(n => n.kind === 'oscillator').length === tones.length, 'No slow modulation oscillators to produce repeating swells');
-check(tones.every(n => n.detune.value === 0), 'Fixed tuning avoids slow detuning beats');
-check(tones.every(n => n.starts === 1 && n.stops === 0), 'Voices sustain instead of scheduling one-shot endings');
-check(envelope.gain.value === 0.9, 'Sustained envelope stays open under a still cursor');
-check(app.timers.size === 0, 'No release or suspension timer runs while hovering');
-check(tones[0].frequency.value === 146.832, 'All colours share a lighter D3 foundation');
-check(tones.every(n => n.type === 'sine'), 'Pure, soft tones without buzzy triangle-wave harmonics');
-const ratios = [1, 5 / 4, 3 / 2, 2, 5 / 2, 3, 4, 5, 6];
-check(tones.every((node, index) => node.frequency.value === 146.832 * ratios[index]), 'Exact 4:5:6 major triads and octave ratios, without equal-temperament beating');
-check(ctx.nodes.every(n => !['convolver', 'bufferSource', 'filter', 'compressor'].includes(n.kind)), 'No reverb build-up, noise, filter sweeps or compressor pumping');
-check([envelope, ctx.nodes[1]].every(node => node.gain.calls.at(-1)[0] === 'linear' && node.gain.calls.at(-1)[2] === 0.008), 'Full level within 8ms, with just an anti-click edge');
-const count = ctx.nodes.length;
-const originalFrequencies = tones.map(n => n.frequency.value);
-const levels = tones.map(n => n.connections[0].gain);
-const originalBalance = levels.map(gain => gain.value);
-app.setColour([20, 140, 193]); app.hover();
-check(levels.some((gain, i) => gain.value !== originalBalance[i]), 'Blue changes the balance of the shared major chord');
-check(tones.every((n, i) => n.frequency.value === originalFrequencies[i] && n.frequency.calls.length === 0), 'No pitch glides or retuning when changing colour');
-check(levels.every(gain => gain.calls.at(-1)[0] === 'linear' && gain.calls.at(-1)[2] === 0.008), 'Tone balances settle within 8ms instead of swelling');
-const blue = levels.map(gain => gain.value);
-app.setColour([40, 39, 40]); app.hover();
-check(levels.every((gain, i) => gain.value === blue[i]), 'Charcoal between stripes retains the last balance');
-const colours = [[234, 201, 106], [95, 223, 136], [43, 206, 196], [224, 165, 201], [205, 205, 205], [20, 140, 193]];
-const balances = [];
-for (const colour of colours) {
-  app.setColour(colour); app.hover(); balances.push(levels.map(gain => gain.value));
-  assert.deepEqual(tones.map(n => n.frequency.value), originalFrequencies, 'Every colour has exactly the same fixed major-chord pitches');
-  assert.ok(levels.every(gain => gain.value > 0), 'Every colour retains every note of the triad');
-  assert.ok(Math.abs(levels.reduce((sum, gain) => sum + gain.value ** 2, 0) - 1) < 1e-12, 'Equal sustained energy in all colours');
-}
-check(new Set(balances.map(weights => weights.join(','))).size === 6, 'All six colours have a distinct balance of the same chord');
-check(true, 'Only the root, pure major third and perfect fifth in every octave; no sixths, sevenths or ninths');
-for (const from of balances) for (const to of balances) for (const fraction of [0, 0.25, 0.5, 0.75, 1]) {
-  const mix = from.map((value, i) => value * (1 - fraction) + to[i] * fraction);
-  assert.ok(mix.every(value => value > 0));
-  const energy = mix.reduce((sum, value) => sum + value * value, 0);
-  assert.ok(energy > 0.97 && energy <= 1 + 1e-12, 'Every possible colour transition retains the major chord without a volume surge');
-}
-check(true, 'All 36 colour-to-colour transitions retain the same pitches and steady energy');
-for (let i = 0; i < 1000; i++) { app.setColour(colours[i % 6]); app.hover(); }
-check(ctx.nodes.length === count, 'One thousand colour changes reuse exactly the same graph');
-check(tones.every(n => n.frequency.calls.length === 0 && n.detune.calls.length === 0), 'Even rapid transitions never create between-note pitches');
-app.button.emit('pointerleave');
-check(envelope.gain.value === 0 && envelope.gain.calls.at(-1)[3] === 0.65, 'Leaving releases every octave gently');
-check([...app.timers.values()][0].delay === 6000, 'The release finishes before suspension');
-app.hover();
-check(envelope.gain.value === 0.9 && app.timers.size === 0, 'Re-entry cancels suspension and restores the steady level');
-app.button.emit('pointerleave'); await app.advance();
-check(ctx.state === 'suspended', 'Idle audio suspends to save CPU');
-app.hover(); await app.flush();
-check(ctx.state === 'running' && ctx.nodes.length === count && envelope.gain.value === 0.9, 'Re-entry resumes the same instrument');
-app.window.emit('blur');
-check(envelope.gain.value === 0 && ctx.nodes[1].gain.value === 0, 'Window blur silences every voice');
+check(ctx.state === 'running' && tones(ctx).length === 2, 'One colour creates one small chime with an octave transient');
+const first = tones(ctx);
+check(first[0].frequency.value === 587.328 && first[1].frequency.value === 1174.656, 'Bright D5/D6 sparkle, with no low organ foundation');
+check(first.every(n => n.type === 'sine' && n.detune.value === 0), 'Soft sine partials with no detuning');
+check(first.every(n => n.starts === 1 && n.stops === 1 && n.stopAt <= 0.65), 'Every note schedules its own ending within 650ms');
+const firstGains = first.map(n => n.connections[0].gain);
+check(firstGains.every(g => g.calls.some(c => c[0] === 'linear' && c[2] === 0.003)), 'A crisp 3ms anti-click attack, without swelling');
+check(firstGains.every(g => g.calls.some(c => c[0] === 'exponential') && g.calls.at(-1)[1] === 0), 'Every partial decays completely to zero, with no sustain');
+check(ctx.nodes.every(n => ['gain', 'oscillator', 'panner'].includes(n.kind)), 'No reverb, noise, compressor or modulating filter bed');
+check([...app.timers.values()].length === 1 && [...app.timers.values()][0].delay === 900, 'Only a short idle-suspension timer, never a repeating sound timer');
+for (let i = 0; i < 100; i++) { ctx.tick(0.01); app.hover(); }
+check(tones(ctx).length === 2, 'Resting or moving within one colour cannot repeat a note');
+check(alive(ctx).length === 0 && first.every(n => n.disconnected), 'Both oscillators and their nodes are cleaned up after decay');
 await app.advance();
-check(ctx.state === 'suspended', 'Background audio suspends after the short safety fade');
+check(ctx.state === 'suspended', 'The audio sleeps even while the cursor remains over the artwork');
 app.hover(); await app.flush();
+check(ctx.state === 'suspended' && tones(ctx).length === 2, 'Same-colour pointer jitter does not wake audio');
+
+const colours = [[234, 201, 106], [95, 223, 136], [43, 206, 196], [224, 165, 201], [205, 205, 205], [20, 140, 193]];
+const ratios = [1, 5 / 4, 3 / 2, 2, 5 / 2, 3];
+const pitches = [];
+app.button.emit('pointerleave');
+for (let i = 0; i < 6; i++) {
+  ctx.tick(0.1); app.setColour(colours[i]); app.hover(); await app.flush();
+  const latest = tones(ctx).slice(-2);
+  assert.equal(latest[0].frequency.value, 587.328 * ratios[i]);
+  assert.equal(latest[1].frequency.value, 587.328 * ratios[i] * 2);
+  pitches.push(latest[0].frequency.value);
+}
+check(new Set(pitches).size === 6, 'All six colours play distinct notes of one just-tuned major triad across octaves');
+check(tones(ctx).every(n => n.frequency.calls.length === 0), 'No pitch glides or in-between notes');
+check(ctx.state === 'running', 'Crossing into another colour wakes the same audio context');
+const beforeDark = tones(ctx).length;
+app.setColour([40, 39, 40]); app.hover();
+check(tones(ctx).length === beforeDark, 'Dark ground and frame make no sound');
+ctx.tick(0.1); app.setColour(colours[5]); app.hover();
+check(tones(ctx).length === beforeDark + 2, 'Reaching another stripe after a gap can sparkle again');
+
+const beforeRush = tones(ctx).length;
+for (let i = 0; i < 1000; i++) { app.setColour(colours[i % 6]); app.hover(); }
+check(tones(ctx).length === beforeRush, 'A burst of pointer events cannot schedule a burst of notes');
+let maxAlive = 0;
+for (let i = 0; i < 1000; i++) {
+  ctx.tick(0.01); app.setColour(colours[i % 6]); app.hover();
+  maxAlive = Math.max(maxAlive, alive(ctx).length);
+}
+check(maxAlive <= 24, 'Fast continuous movement stays within the 12-chime overlap limit');
+const beforeRest = tones(ctx).length;
+await app.advance();
+check(tones(ctx).length === beforeRest && alive(ctx).length === 0 && ctx.state === 'suspended', 'Stopping motion leaves no queued notes or sounding tail');
+check(ctx.nodes.filter(n => n.kind === 'gain' && !n.disconnected).length === 1, 'Only the reusable output remains after completed notes are disconnected');
+check(tones(ctx).every(n => ratios.some(r => Math.abs(n.frequency.value / 587.328 - r) < 1e-9) || [4, 5, 6].includes(n.frequency.value / 587.328)), 'Every note and overtone stays in the same major chord during rapid crossings');
+
+app.button.emit('pointerleave'); ctx.tick(0.1); app.hover(); await app.flush();
+const leaving = alive(ctx);
+app.button.emit('pointerleave');
+check(leaving.every(n => n.stops === 1), 'Leaving allows only the already-short chime to finish');
+app.hover(); await app.flush();
+app.window.emit('blur');
+check(alive(ctx).every(n => n.stopAt <= ctx.currentTime + 0.021), 'Window blur quickly silences all remaining notes');
+await app.advance();
+check(ctx.state === 'suspended' && alive(ctx).length === 0, 'Background audio is stopped and suspended');
+ctx.tick(0.1); app.hover(); await app.flush();
 app.document.hidden = true; app.document.emit('visibilitychange');
-check(envelope.gain.value === 0 && ctx.nodes[1].gain.value === 0, 'A hidden tab cannot retain a sounding drone');
+const hiddenCount = tones(ctx).length;
 app.hover();
-check(envelope.gain.value === 0, 'Pointer events cannot restart a hidden tab');
-app.document.hidden = false; app.hover(); await app.flush();
+check(tones(ctx).length === hiddenCount, 'Hidden tabs cannot trigger new sparkles');
+app.document.hidden = false; app.button.emit('pointerleave'); app.hover(); await app.flush();
 app.window.emit('pagehide'); await app.flush();
 check(ctx.state === 'suspended', 'Navigation suspends audio immediately');
 
-const touch = fixture(); touch.unlock(); await touch.flush(); touch.hover({ pointerType: 'touch' });
-check(touch.contexts[0].nodes.length === 0, 'Touch scrolling does not start a drone');
+const touch = fixture();
+touch.document.emit('pointerdown', { pointerType: 'touch' });
+touch.hover({ pointerType: 'touch' });
+check(touch.contexts.length === 0, 'Touch scrolling neither unlocks nor plays audio');
+touch.unlock(); await touch.flush(); touch.hover({ buttons: 1 });
+check(touch.contexts[0].nodes.length === 0, 'Dragging with a pressed pointer does not play notes');
 touch.hover(); await touch.flush(); touch.button.emit('pointercancel');
-check(touch.contexts[0].nodes[0].gain.value === 0, 'Cancelled pointers release the drone');
-check(!touch.button.listeners.click, 'Artwork click navigation remains untouched');
+await touch.advance();
+check(alive(touch.contexts[0]).length === 0, 'Cancelled pointers cannot leave sustained audio');
+check(!touch.button.listeners.click, 'Artwork click navigation is untouched');
 
 const fallback = fixture({ hold: false, stereo: false });
-fallback.hover(); fallback.unlock(); await fallback.flush();
-fallback.setColour(colours[3]); fallback.hover(); fallback.button.emit('pointerleave');
-check(fallback.contexts[0].nodes[0].gain.calls.some(c => c[0] === 'cancel'), 'Automation fallback works without cancelAndHoldAtTime');
-check(fallback.contexts[0].nodes.every(n => n.kind !== 'panner'), 'Sound also works without a stereo-panner API');
-
+fallback.hover(); fallback.unlock(); await fallback.flush(); fallback.window.emit('blur');
+check(fallback.contexts[0].nodes.some(n => n.gain.calls.some(c => c[0] === 'cancel')), 'Quieting works without cancelAndHoldAtTime');
+check(fallback.contexts[0].nodes.every(n => n.kind !== 'panner'), 'Sound works without stereo-panner support');
 const unsupported = fixture({ supported: false });
 unsupported.unlock(); unsupported.hover();
 check(unsupported.contexts.length === 0, 'Unsupported audio is a harmless no-op');
 const blocked = fixture({ rejectResume: true });
-blocked.hover(); blocked.unlock(); await blocked.flush(); blocked.hover(); await blocked.flush();
-check(blocked.contexts[0].nodes.length === 0, 'Blocked audio resume does not allocate a graph or throw');
+blocked.hover(); blocked.unlock(); await blocked.flush();
+check(blocked.contexts[0].nodes.length === 0, 'Blocked audio resume allocates no instrument');
 const race = fixture(); race.hover(); race.unlock(); race.button.emit('pointerleave'); await race.flush();
-check(race.contexts[0].nodes.length === 0, 'Leaving during async unlock cannot start a stray drone');
+check(race.contexts[0].nodes.length === 0, 'Leaving during asynchronous unlock cannot start a stray note');
 await race.advance();
 check(race.contexts[0].state === 'suspended', 'Unused unlocked contexts return to sleep');
+const frame = fixture(); frame.setColour([40, 39, 40]); frame.hover(); frame.unlock(); await frame.flush(); await frame.advance();
+check(frame.contexts[0].state === 'suspended' && frame.contexts[0].nodes.length === 0, 'Unlocking over the frame remains silent and returns to sleep');
 const keyboard = fixture(); keyboard.document.emit('keydown', { key: 'Escape' });
-check(keyboard.contexts.length === 0, 'Unrelated keyboard actions do not unlock audio');
+check(keyboard.contexts.length === 0, 'Unrelated keys do not unlock audio');
 keyboard.document.emit('keydown', { key: 'Enter' }); await keyboard.flush(); keyboard.hover();
-check(keyboard.contexts[0].nodes.length > 0, 'A keyboard activation can unlock subsequent hovering');
+check(tones(keyboard.contexts[0]).length === 2, 'Keyboard activation can unlock subsequent movement');
 
-console.log(`Passed ${checks} ambient audio checks.`);
+const root = new URL('../', import.meta.url);
+const atHead = name => execFileSync('git', ['show', 'HEAD:' + name], { cwd: root, encoding: 'utf8' });
+const currentAmbient = fs.readFileSync(file, 'utf8');
+check(currentAmbient.split('// Artwork sound:')[0] === atHead('unfold-ambient.js').split(/\/\/ (?:A single, reusable instrument:|Artwork sound:)/)[0], 'Existing music-status integration is unchanged');
+const index = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+check(index === atHead('index.html').replace(/unfold-ambient\.js\?v=[a-z0-9-]+/, 'unfold-ambient.js?v=sparkle-1'), 'The only HTML change is the audio cache version');
+check(['unfold.css', 'unfold.js', 'entry.js', 'daily-hexagram.js'].every(name => fs.readFileSync(new URL('../' + name, import.meta.url), 'utf8') === atHead(name)), 'No visual, layout, entry or hexagram changes');
+
+console.log(`Passed ${checks} sparkle audio checks.`);

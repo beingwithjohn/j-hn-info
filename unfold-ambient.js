@@ -7,28 +7,15 @@
     refresh();setInterval(refresh,60000);document.addEventListener('visibilitychange',function(){if(!document.hidden)refresh()});
   })();
 
-// A single, reusable instrument: colours balance the same pure major chord.
+// Artwork sound: brief, movement-triggered major-chord sparkles.
 (function () {
   var artwork = document.getElementById('artwork');
   var button = document.getElementById('artwork-button');
   if (!artwork || !button) return;
 
-  var base = 146.832; // D3.
-  // Just-tuned major triads (4:5:6), repeated at exact octaves. No extensions,
-  // detuning or moving pitches, so even rapid colour changes share one harmony.
-  var ratios = [1, 5 / 4, 3 / 2, 2, 5 / 2, 3, 4, 5, 6];
-  var balances = [
-    [1, 0.66, 0.82, 0.40, 0.24, 0.32, 0.12, 0.08, 0.10], // yellow: warm
-    [0.9, 0.76, 0.82, 0.44, 0.34, 0.32, 0.12, 0.10, 0.12], // green: full
-    [0.9, 0.68, 0.90, 0.52, 0.30, 0.42, 0.16, 0.10, 0.14], // turquoise: open
-    [0.9, 0.82, 0.76, 0.40, 0.44, 0.30, 0.14, 0.16, 0.10], // pink: soft
-    [0.9, 0.70, 0.82, 0.54, 0.42, 0.44, 0.24, 0.18, 0.22], // silver: bright
-    [1, 0.68, 0.90, 0.34, 0.24, 0.36, 0.10, 0.08, 0.12]  // blue: grounded
-  ].map(function (weights) {
-    // Equal energy across colours, without a compressor pumping the volume.
-    var energy = Math.sqrt(weights.reduce(function (sum, weight) { return sum + weight * weight; }, 0));
-    return weights.map(function (weight) { return weight / energy; });
-  });
+  var base = 587.328; // D5: small, bright notes, with no sustained bass/chord.
+  // Root, pure major third and fifth at two octaves. Every overlap shares D major.
+  var ratios = [1, 5 / 4, 3 / 2, 2, 5 / 2, 3];
 
   function hold(param, time) {
     if (typeof param.cancelAndHoldAtTime === 'function') {
@@ -40,64 +27,68 @@
     }
   }
 
-  function approach(param, value, time, duration) {
-    hold(param, time);
-    param.setTargetAtTime(value, time, duration);
-  }
-
-  function settle(param, value, time) {
-    hold(param, time);
-    // Fully at the new level in 8ms: an anti-click edge, not an audible swell.
-    param.linearRampToValueAtTime(value, time + 0.008);
-  }
-
-  function createDrone(ctx) {
-    var envelope = ctx.createGain();
-    envelope.gain.value = 0;
+  function createSparkle(ctx) {
     var master = ctx.createGain();
-    master.gain.value = 0.11;
-    envelope.connect(master).connect(ctx.destination);
-
-    // Pure sustained tones and fixed stereo spacing keep the upper octaves airy
-    // without a reverb/noise layer building up or introducing unrelated pitches.
-    var pans = [-0.12, 0.12, 0, -0.35, 0.35, -0.18, -0.6, 0.6, 0];
-    var levels = [];
-    var start = ctx.currentTime;
-    ratios.forEach(function (ratio, index) {
-      var lane = ctx.createGain();
-      lane.gain.value = balances[2][index];
-      var oscillator = ctx.createOscillator();
-      oscillator.type = 'sine';
-      oscillator.frequency.value = base * ratio;
-      oscillator.detune.value = 0;
-      oscillator.connect(lane);
-      if (typeof ctx.createStereoPanner === 'function') {
-        var pan = ctx.createStereoPanner();
-        pan.pan.value = pans[index];
-        lane.connect(pan).connect(envelope);
-      } else {
-        lane.connect(envelope);
-      }
-      oscillator.start(start);
-      levels.push(lane.gain);
-    });
+    master.gain.value = 0.6;
+    master.connect(ctx.destination);
+    var active = new Set();
+    var lastStrike = -Infinity;
 
     return {
-      enter: function (colour, immediate) {
+      strike: function (colour, position) {
         var time = ctx.currentTime;
-        levels.forEach(function (gain, index) {
-          if (immediate) {
-            gain.setValueAtTime(balances[colour][index], time);
-          } else {
-            settle(gain, balances[colour][index], time);
-          }
+        // No queue: ignore excess crossings, never play them after motion stops.
+        if (time - lastStrike < 0.06 || active.size >= 12) return false;
+        lastStrike = time;
+        var note = {nodes: [], oscillators: [], gains: [], remaining: 2};
+        active.add(note);
+        var output = master;
+        if (typeof ctx.createStereoPanner === 'function') {
+          output = ctx.createStereoPanner();
+          output.pan.value = Math.max(-0.6, Math.min(0.6, (position - 0.5) * 1.2));
+          output.connect(master);
+          note.nodes.push(output);
+        }
+        // A bright octave transient above a plucked sine tone. No detuning,
+        // pitch bending, noise or reverb to introduce tension or a swelling bed.
+        [[1, 0.07, 0.52, 0.62], [2, 0.022, 0.17, 0.24]].forEach(function (partial) {
+          var oscillator = ctx.createOscillator();
+          oscillator.type = 'sine';
+          oscillator.frequency.value = base * ratios[colour] * partial[0];
+          oscillator.detune.value = 0;
+          var level = ctx.createGain();
+          var peak = partial[1] / (1 + colour * 0.06);
+          level.gain.value = 0;
+          level.gain.setValueAtTime(0, time);
+          level.gain.linearRampToValueAtTime(peak, time + 0.003);
+          level.gain.exponentialRampToValueAtTime(0.00001, time + partial[2]);
+          level.gain.linearRampToValueAtTime(0, time + partial[3]);
+          oscillator.connect(level).connect(output);
+          note.nodes.push(oscillator, level);
+          note.oscillators.push(oscillator);
+          note.gains.push(level.gain);
+          oscillator.onended = function () {
+            note.remaining--;
+            if (note.remaining) return;
+            note.nodes.forEach(function (node) { node.disconnect(); });
+            active.delete(note);
+          };
+          oscillator.start(time);
+          oscillator.stop(time + partial[3] + 0.02);
         });
-        settle(master.gain, 0.11, time);
-        settle(envelope.gain, 0.9, time);
+        return true;
       },
-      leave: function (quiet) {
-        approach(envelope.gain, 0, ctx.currentTime, quiet ? 0.08 : 0.65);
-        if (quiet) approach(master.gain, 0, ctx.currentTime, 0.06);
+      quiet: function () {
+        active.forEach(function (note) {
+          note.gains.forEach(function (gain) {
+            hold(gain, ctx.currentTime);
+            gain.linearRampToValueAtTime(0, ctx.currentTime + 0.012);
+          });
+          note.oscillators.forEach(function (oscillator) {
+            oscillator.stop(ctx.currentTime + 0.02);
+          });
+        });
+        lastStrike = -Infinity;
       }
     };
   }
@@ -106,7 +97,8 @@
   var instrument = null;
   var unlocked = false;
   var hovering = false;
-  var colour = 2;
+  var colour = -1;
+  var position = 0.5;
   var soundingColour = null;
   var idleTimer = null;
   var resumePending = false;
@@ -116,44 +108,54 @@
     idleTimer = null;
   }
 
+  function sleepWhenQuiet() {
+    cancelIdle();
+    if (!context) return;
+    // A resting cursor is silent too; no permanent oscillator graph or idle CPU.
+    idleTimer = setTimeout(function () {
+      if (context.state === 'running') context.suspend().catch(function () {});
+    }, 900);
+  }
+
   function sound() {
-    if (!unlocked || !hovering || document.hidden || !context) return;
+    if (!unlocked || !hovering || colour < 0 || document.hidden || !context) return;
+    if (soundingColour === colour) return;
     cancelIdle();
     if (context.state !== 'running') {
       if (!resumePending && context.state === 'suspended') {
         resumePending = true;
         context.resume().then(function () {
           resumePending = false;
-          if (hovering && !document.hidden) sound();
-          else stop(false);
+          sleepWhenQuiet();
+          if (hovering && !document.hidden && colour >= 0) sound();
         }).catch(function () { resumePending = false; });
       }
       return;
     }
-    if (soundingColour === colour) return;
-    var first = !instrument;
-    if (first) instrument = createDrone(context);
-    instrument.enter(colour, first);
+    if (!instrument) instrument = createSparkle(context);
+    instrument.strike(colour, position);
+    // A rate-limited crossing is consumed too: no repeated notes under a still cursor.
     soundingColour = colour;
+    sleepWhenQuiet();
   }
 
   function unlock(event) {
     if (event.type === 'keydown' && event.key !== 'Enter' && event.key !== ' ') return;
+    if (event.pointerType === 'touch') return;
     var AudioContext = window.AudioContext || window.webkitAudioContext;
     if (!AudioContext) return;
     try {
       if (!context) context = new AudioContext();
       unlocked = true;
-      // Resume in the gesture itself. A hover alone cannot unlock every browser.
+      // Resume in the gesture itself. Hover alone cannot unlock every browser.
       if (context.state === 'suspended') {
         context.resume().then(function () {
-          if (hovering && !document.hidden) sound();
-          else stop(false);
+          sleepWhenQuiet();
+          if (hovering && !document.hidden && colour >= 0) sound();
         }).catch(function () {});
-      } else if (hovering) {
-        sound();
       } else {
-        stop(false);
+        sleepWhenQuiet();
+        if (hovering && !document.hidden && colour >= 0) sound();
       }
     } catch (error) { /* Sound is an enhancement, never a navigation dependency. */ }
   }
@@ -162,17 +164,13 @@
 
   function stop(quiet) {
     soundingColour = null;
-    if (instrument) instrument.leave(quiet);
-    cancelIdle();
-    if (!context) return;
-    // Let the release finish, then suspend instead of spending idle CPU.
-    idleTimer = setTimeout(function () {
-      if (!hovering && context.state === 'running') context.suspend().catch(function () {});
-    }, quiet ? 600 : 6000);
+    if (quiet && instrument) instrument.quiet();
+    sleepWhenQuiet();
   }
 
   function leave() {
     hovering = false;
+    colour = -1;
     stop(false);
   }
 
@@ -213,8 +211,10 @@
     try {
       var pixel = sampler.getImageData(Math.floor(x * sampler.canvas.width), Math.floor(y * sampler.canvas.height), 1, 1).data;
       var next = classify(pixel[0], pixel[1], pixel[2]);
-      // Keep the harmony across the dark ground between stripes.
-      if (next !== -1) colour = next;
+      position = x;
+      colour = next;
+      // Frame and dark ground are silent. A later stripe can sparkle afresh.
+      if (next === -1) { soundingColour = null; return; }
       sound();
     } catch (error) { leave(); }
   }

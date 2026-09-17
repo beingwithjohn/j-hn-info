@@ -18,6 +18,9 @@ for (const id of ['space-to-be', 'beings-club', 'arc-network', 'wonderfool', 'cr
   assert.ok(html.includes('id="' + id + '"'), 'Existing in-page information retained: ' + id);
 }
 const title = html.match(/<title>(.*?)<\/title>/)[1];
+assert.ok(html.includes('<span class="wordmark-name" aria-hidden="true">John Ooi</span>'), 'Name is a single text line, not stacked letters');
+assert.match(css, /\.wordmark-name\{display:block;white-space:nowrap;/, 'Name stays on one horizontal line');
+assert.ok(css.includes('body:not(:has(.page :is(.project,.feature)[open]))'), 'Landing fit depends on visible top-level sections, not hidden nested chapters');
 assert.equal(title, 'John Ooi · Maybe we should know each other.');
 assert.equal(html.match(/property="og:title" content="([^"]+)"/)[1], title);
 assert.equal(html.match(/name="twitter:title" content="([^"]+)"/)[1], title);

@@ -3,7 +3,7 @@
 .skip{position:fixed;top:12px;left:12px;z-index:10;padding:12px;background:#fff;transform:translateY(-200%)}.skip:focus{transform:none}
 .page{display:grid;grid-template-columns:minmax(0,40fr) minmax(0,54fr);gap:6%;min-height:calc(100svh - var(--bar));padding:6.2vh var(--gutter) 4.6vh}
 .left-rail{display:flex;flex-direction:column;gap:70px;min-width:0}.work{display:flex;flex-direction:column;gap:clamp(14px,1.6vh,22px)}.project{min-width:0;scroll-margin-top:32px}.project>summary{list-style:none;cursor:pointer;position:relative;width:fit-content;max-width:100%;transform-origin:left center;transition:color 240ms ease,transform 420ms var(--ease)}summary::-webkit-details-marker{display:none}.work-title{display:block;font-size:clamp(2rem,3.25vw,4.55rem);font-weight:700;line-height:.86;letter-spacing:-.065em;text-transform:uppercase}.work-desc{display:block;margin:.5rem 0 0 .15rem;font-family:'JetBrains Mono',monospace;font-size:.875rem;line-height:1.35;letter-spacing:.05em;text-transform:uppercase;color:var(--quiet)}.project[open]>summary{color:#62645f}.project-copy{padding:28px 0 34px;max-width:38rem;font-size:clamp(1rem,1.2vw,1.15rem);line-height:1.6}.project-copy p+p{margin-top:1em}.project-copy .practical{margin-top:1.5em;font-family:'JetBrains Mono',monospace;font-size:.875rem;color:var(--quiet)}.onward{display:block;width:fit-content;margin-top:1.2em;font-family:'JetBrains Mono',monospace;font-size:.875rem;line-height:1.65;text-decoration:underline;text-underline-offset:5px}.onward:hover{color:#666}.beings-logo{width:125px;height:auto;margin:0 0 20px}
-.name-home{margin-top:auto;font-weight:700}.wordmark{display:block;width:fit-content}.wordmark-name{display:flex;flex-direction:column;align-items:flex-start;font-size:clamp(1.7rem,2.85vw,3.9rem);line-height:.71;letter-spacing:-.06em;text-transform:uppercase;transition:color 240ms ease}.wordmark-name .ooi{margin-top:.46em}.wordmark:hover{color:#8a8983}
+.name-home{margin-top:auto;font-weight:700}.wordmark{display:block;width:fit-content}.wordmark-name{display:block;white-space:nowrap;font-size:clamp(1.7rem,2.85vw,3.9rem);line-height:1;letter-spacing:-.06em;text-transform:uppercase;transition:color 240ms ease}.wordmark:hover{color:#8a8983}
 .has-feature .name-home{margin-top:clamp(56px,8vh,90px);position:sticky;top:30px;align-self:flex-start}
 .right-rail{min-width:0;display:flex;flex-direction:column}.visual-stack{margin-top:11.5vh;margin-right:1.6vw}.transmission{display:block;width:100%;margin-left:0;aspect-ratio:3749/2500;transition:width var(--motion) var(--ease),margin var(--motion) var(--ease);cursor:pointer}.transmission img{display:block;width:100%;height:auto}.visual-stack.expanded .transmission{width:40%;margin-left:60%;margin-bottom:40px}
 .feature{min-width:0;scroll-margin-top:28px}.feature-summary{margin-top:20px;cursor:pointer;font-size:1rem}.enhanced .feature-summary{display:none}.feature-inner{padding-bottom:36px;font-size:clamp(1rem,1.3vw,1.2rem);line-height:1.65}.feature-inner>p+p{margin-top:1em}.feature h2{font-size:clamp(2rem,3.2vw,3.7rem);font-weight:500;line-height:1;letter-spacing:-.06em}.story-heading{display:flex;align-items:center;gap:22px;margin-bottom:30px}.portrait{width:78px;height:78px;object-fit:contain}.chapter{margin:24px 0;font-size:1rem}.chapter>summary{cursor:pointer;list-style:none;font-family:'JetBrains Mono',monospace;font-size:.875rem;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid var(--line)}.chapter[open]>summary>span{transform:rotate(45deg)}.chapter-copy{padding:24px 0 4px}.chapter-copy>p+p{margin-top:1em}.life-photo{margin:18px 0 28px}.life-photo img{display:block;width:100%;height:auto}.life-photo figcaption{font-family:'JetBrains Mono',monospace;font-size:.8125rem;line-height:1.6;color:var(--quiet);margin-top:12px}.feature-inner .invitation{margin-top:32px}.feature-actions{display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex-wrap:wrap}.back{display:block;width:fit-content;margin-top:24px;font-family:'JetBrains Mono',monospace;font-size:.875rem;color:var(--quiet)}.back:hover{color:var(--ink)}
@@ -30,6 +30,41 @@ html:not(.enhanced) .space-feature{display:none}
 
 /* Keep the artwork in its existing desktop position; the corner stays quiet. */
 @media(min-width:861px){.right-rail{padding-top:clamp(1rem,1.55vw,1.75rem)}}
+
+/* The closed landing fits the viewport. Open disclosures return to document flow.
+   No overflow lock: enlarged text and exceptionally small viewports stay accessible. */
+html.enhanced body:not(:has(.page :is(.project,.feature)[open])){display:flex;flex-direction:column;height:100svh}
+.enhanced .page:not(:has(.project[open],.feature[open])){flex:1;min-height:0}
+.enhanced .page:not(:has(.project[open],.feature[open]))+.utility{flex-shrink:0}
+@media(max-width:860px){
+  .enhanced .page:not(:has(.project[open],.feature[open])){grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) 44px;row-gap:clamp(8px,1.8svh,20px);padding-top:clamp(12px,2.4svh,24px);padding-bottom:12px}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .work{gap:clamp(6px,1.5svh,16px)}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .work-title{font-size:clamp(1.25rem,min(7.2vw,3.6svh),2.5rem)}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .work-desc{font-size:.75rem;line-height:1.25;margin-top:.3rem}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .visual-stack{display:flex;align-items:center;justify-content:center;container-type:size;min-height:0;margin:0}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .transmission{width:min(100%,149.96cqh);height:auto;max-height:100%;margin:0;min-width:0}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .transmission img{width:100%;height:auto}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .name-home{margin-top:0}
+  .enhanced .page:not(:has(.project[open],.feature[open]))+.utility{margin-top:0;min-height:0;padding-top:10px;padding-bottom:10px;gap:8px}
+}
+@media(min-width:600px) and (max-height:550px){
+  .enhanced .page:not(:has(.project[open],.feature[open])){grid-template-columns:minmax(0,40fr) minmax(0,54fr);grid-template-rows:minmax(0,1fr);gap:6%;padding:12px var(--gutter)}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .left-rail,.enhanced .page:not(:has(.project[open],.feature[open])) .right-rail{display:flex;flex-direction:column;min-height:0;gap:10px;padding-top:0}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .work{gap:8px}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .work-title{font-size:clamp(1.2rem,2.9vw,1.7rem)}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .work-desc{font-size:.75rem;line-height:1.2;margin-top:.25rem}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .name-home{margin-top:auto;align-self:flex-start}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .wordmark-name{font-size:1.5rem}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .visual-stack{display:flex;align-items:center;justify-content:center;container-type:size;flex:1;min-height:0;margin:0}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .transmission{width:min(100%,149.96cqh);height:auto;max-height:100%;min-width:0;margin:0}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .transmission img{width:100%;height:auto}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .mark-home{min-height:42px;padding:0;margin-top:0;align-self:stretch}
+  .enhanced .page:not(:has(.project[open],.feature[open])) .space-mark{width:42px;height:42px}
+  .enhanced .page:not(:has(.project[open],.feature[open]))+.utility{grid-template-columns:minmax(0,1fr) auto minmax(260px,1.2fr);min-height:56px;margin:0;padding:8px var(--gutter);gap:14px}
+  .enhanced .page:not(:has(.project[open],.feature[open]))+.utility #now-playing,.enhanced .page:not(:has(.project[open],.feature[open]))+.utility .about-trigger,.enhanced .page:not(:has(.project[open],.feature[open]))+.utility .letter-form{grid-column:auto;grid-row:auto}
+  .enhanced .page:not(:has(.project[open],.feature[open]))+.utility .letter-form{gap:8px}
+  .enhanced .page:not(:has(.project[open],.feature[open]))+.utility .letter-form label,.enhanced .page:not(:has(.project[open],.feature[open]))+.utility .letter-form button{font-size:.75rem}
+}
 
 /* The original artwork assembly covers preparation of the whole homepage. */
 .site-intro{display:none;position:fixed;z-index:9999;inset:0;place-items:center;background:var(--paper);overflow:hidden;pointer-events:none}

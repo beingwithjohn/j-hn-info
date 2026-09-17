@@ -177,13 +177,6 @@
 
   function toggle(panel, origin) {
     const next = !desired.get(panel);
-    // One project at a time. Stacked panels pushed the left rail past the single
-    // screen this page is built for, so opening one closes whichever was open.
-    if (next && panel.classList.contains('project')) {
-      panels.forEach(other => {
-        if (other !== panel && other.classList.contains('project') && desired.get(other)) close(other);
-      });
-    }
     const done = next ? reveal(panel, origin) : close(panel);
     writeHistory(panel);
     done.then(completed => {

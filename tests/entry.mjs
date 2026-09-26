@@ -24,7 +24,7 @@ function setup(options = {}) {
   const listeners = {}, documentListeners = {}, emitted = [], fontLoads = [];
   const fontReady = deferred(), media = {matches: !!options.reduced};
   media.addEventListener = (_type, fn) => { media.change = fn; };
-  const images = Array.from({length: 3}, (_, i) => {
+  const images = Array.from({length: 2}, (_, i) => {
     const events = {}, decoded = deferred();
     return {
       id: 'image-' + i, loading: 'lazy', complete: !!options.cached, naturalWidth: options.cached ? 400 : 0,

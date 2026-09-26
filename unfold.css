@@ -39,8 +39,6 @@ summary::-webkit-details-marker{display:none}
 .project-copy .practical{margin-top:1.5em;font-family:'JetBrains Mono',monospace;font-size:.875rem;color:var(--quiet)}
 .onward{display:block;width:fit-content;margin-top:1.2em;font-family:'JetBrains Mono',monospace;font-size:.875rem;line-height:1.65;text-decoration:underline;text-underline-offset:5px}
 .onward:hover{color:var(--hover)}
-.beings-logo{width:125px;height:auto;margin:0 0 20px}
-[data-theme="dark"] .beings-logo{filter:invert(1)}
 .feature-stack{margin-top:40px}
 .enhanced .feature-stack:not(:has(.feature[open])){display:none}
 .feature{min-width:0;scroll-margin-top:28px}

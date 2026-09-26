@@ -13,7 +13,8 @@ for (const [, src] of html.matchAll(/(?:src|href)="([^"#]+)"/g)) {
 assert.ok(html.includes('unfold-ambient.js?v=music-only-1'), 'Listening footer remains loaded without hover audio');
 assert.ok(html.includes('src="entry.js?v=preload-2"'), 'Remaining media still preloads');
 assert.ok(!/id="artwork"|loader-piece|reference-bg/.test(html + css), 'Striped artwork and its loading animation are removed');
-assert.equal([...html.matchAll(/rel="preload" as="image"/g)].length, 3);
+assert.equal([...html.matchAll(/rel="preload" as="image"/g)].length, 2);
+assert.ok(!/beings-logo/.test(html + css), 'Beings Club section has no logo or unnecessary preload');
 for (const id of ['space-to-be', 'beings-club', 'arc-network', 'wonderfool', 'in-the-garden', 'story', 'more-story']) {
   assert.ok(html.includes('id="' + id + '"'), 'Existing in-page information retained: ' + id);
 }
@@ -29,7 +30,7 @@ assert.match(html, /class="space-mark" href="#space-to-be"[^>]+aria-controls="sp
 assert.ok(!/circle-flight|circle-destination|id="space-feature"/.test(html + css + read('unfold.js')), 'Logo no longer flies away or opens duplicate content');
 assert.ok(read('unfold.js').includes("key === 'space-feature' ? 'space-to-be' : key"), 'Old logo links still resolve to Space to Be');
 assert.ok(html.indexOf('src="theme.js?v=1"') < html.indexOf('href="unfold.css?'), 'Remembered colour preference is applied before rendering');
-assert.equal(title, 'John Ooi · Meditation Teacher');
+assert.equal(title, 'John Ooi · Realisation Partner');
 assert.ok(!html.includes('Maybe we should know each other.'), 'Previous invitation removed from visible copy and metadata');
 assert.equal(html.match(/property="og:title" content="([^"]+)"/)[1], title);
 assert.equal(html.match(/name="twitter:title" content="([^"]+)"/)[1], title);

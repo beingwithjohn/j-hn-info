@@ -10,27 +10,20 @@
   const page = document.querySelector('.page');
   const stack = document.querySelector('.feature-stack');
   const story = known.get('story');
-  const feature = known.get('space-feature');
   const space = known.get('space-to-be');
-  const spaceCopy = document.getElementById('space-copy');
-  const spaceHome = space.querySelector('.disclosure-body');
-  const featureCopy = feature.querySelector('.feature-copy');
   const mark = document.querySelector('.space-mark');
-  const markHome = document.querySelector('.mark-home');
-  const markDestination = document.querySelector('.circle-destination');
-  let markMotion;
   let lastPanel;
   let restoring = false;
 
   function sync() {
-    const expanded = desired.get(story) || desired.get(feature);
+    const expanded = desired.get(story);
     stack.classList.toggle('expanded', expanded);
     page.classList.toggle('has-feature', expanded);
     document.querySelectorAll('a[aria-controls="story"]').forEach(link => {
       link.setAttribute('aria-expanded', String(desired.get(story)));
     });
-    mark.setAttribute('aria-expanded', String(desired.get(feature)));
-    mark.setAttribute('aria-label', desired.get(feature) ? 'Close Space to Be' : 'About Space to Be');
+    mark.setAttribute('aria-expanded', String(desired.get(space)));
+    mark.setAttribute('aria-label', desired.get(space) ? 'Close Space to Be' : 'About Space to Be');
   }
 
   function setPanel(panel, next, immediate = false) {
@@ -80,91 +73,27 @@
     });
   }
 
-  function markPosition() {
-    return markMotion?.rect() || mark.getBoundingClientRect();
-  }
-
-  function moveMark(destination, immediate = false, from = markPosition()) {
-    markMotion?.cancel();
-    destination.append(mark);
-    if (immediate || reduced.matches || !from.width) return;
-    // Only the SVG travels above the layout. All information stays in normal flow.
-    // Track the destination as the page makes room for the unfolding information.
-    const flight = mark.querySelector('svg').cloneNode(true);
-    flight.classList.add('circle-flight');
-    flight.setAttribute('aria-hidden', 'true');
-    document.body.append(flight);
-    mark.style.opacity = '0';
-    let frame;
-    let finished = false;
-    const started = performance.now();
-    const finish = () => {
-      if (finished) return;
-      finished = true;
-      cancelAnimationFrame(frame);
-      flight.remove();
-      mark.style.opacity = '';
-      if (markMotion?.flight === flight) markMotion = null;
-    };
-    markMotion = {flight, rect: () => flight.getBoundingClientRect(), finish, cancel: finish};
-    const tick = now => {
-      if (finished) return;
-      const progress = Math.min(1, (now - started) / 740);
-      const eased = 1 - Math.pow(1 - progress, 4);
-      const to = mark.getBoundingClientRect();
-      flight.style.left = `${from.left + (to.left - from.left) * eased}px`;
-      flight.style.top = `${from.top + (to.top - from.top) * eased}px`;
-      flight.style.width = `${from.width + (to.width - from.width) * eased}px`;
-      flight.style.height = `${from.height + (to.height - from.height) * eased}px`;
-      if (progress === 1) finish();
-      else frame = requestAnimationFrame(tick);
-    };
-    tick(started);
-  }
-
-  function closeFeature(immediate = false, restoreNow = false) {
-    const from = markPosition();
-    const done = setPanel(feature, false, immediate);
-    if (mark.parentElement !== markHome) moveMark(markHome, immediate, from);
-    const restore = () => {
-      if (!desired.get(feature)) spaceHome.append(spaceCopy);
-    };
-    if (restoreNow) restore();
-    else done.then(restore);
-    return done;
-  }
-
   function reveal(panel, origin, immediate = false) {
     if (origin) origins.set(panel, origin);
     // Current activities share one open slot; the personal story is independent.
-    if (projects.includes(panel) || panel === feature) {
+    if (projects.includes(panel)) {
       projects.forEach(other => {
         if (other !== panel) setPanel(other, false, immediate);
       });
-      if (panel !== feature) closeFeature(immediate, panel === space);
     }
-    if (panel === feature) {
-      const from = markPosition();
-      setPanel(story, false, immediate);
-      setPanel(space, false, true);
-      featureCopy.append(spaceCopy);
-      markDestination.append(mark);
-      const done = setPanel(feature, true, immediate);
-      moveMark(markDestination, immediate, from);
-      return done;
-    }
-    if (panel === story) closeFeature(immediate);
     if (panel.id === 'more-story') reveal(story, null, immediate);
     return setPanel(panel, true, immediate);
   }
 
   function close(panel, immediate = false) {
-    if (panel === feature) return closeFeature(immediate);
     return setPanel(panel, false, immediate);
   }
 
   function fragment() {
-    try { return decodeURIComponent(location.hash.slice(1)); }
+    try {
+      const key = decodeURIComponent(location.hash.slice(1));
+      return key === 'space-feature' ? 'space-to-be' : key;
+    }
     catch { return ''; }
   }
 
@@ -176,7 +105,7 @@
   }
 
   function keepVisible(panel) {
-    const target = panel === feature ? mark : panel;
+    const target = panel;
     const rect = target.getBoundingClientRect();
     if (rect.top < 16 || rect.top > window.innerHeight - 140) {
       target.scrollIntoView({block: 'start', behavior: reduced.matches ? 'auto' : 'smooth'});
@@ -203,9 +132,7 @@
     panel.addEventListener('toggle', () => {
       if (running.has(panel) || desired.get(panel) === panel.open) return;
       const next = panel.open;
-      if (panel === feature && next) reveal(panel, summary, true);
-      else if (panel === feature) closeFeature(true);
-      else if (projects.includes(panel) && next) reveal(panel, summary, true);
+      if (projects.includes(panel) && next) reveal(panel, summary, true);
       else {
         desired.set(panel, next);
         panel.querySelector(':scope > .disclosure-body').inert = !next;
@@ -224,7 +151,7 @@
       event.preventDefault();
       close(panel);
       writeHistory(panel);
-      const origin = origins.get(panel) || (panel === feature ? mark : document.querySelector('.wordmark'));
+      const origin = origins.get(panel) || document.querySelector('.wordmark');
       origin.focus({preventScroll: true});
       return;
     }
@@ -236,8 +163,11 @@
     toggle(panel, link);
     // Keyboard activation follows the content without trapping focus.
     if (event.detail === 0 && desired.get(panel)) {
-      const focusTarget = panel === feature ? mark : panel.querySelector('.feature-inner');
-      if (focusTarget) { focusTarget.tabIndex = -1; focusTarget.focus({preventScroll: true}); }
+      const focusTarget = panel.querySelector('.feature-inner') || panel.querySelector('summary');
+      if (focusTarget) {
+        if (focusTarget.matches('.feature-inner')) focusTarget.tabIndex = -1;
+        focusTarget.focus({preventScroll: true});
+      }
     }
   });
 
@@ -245,19 +175,18 @@
     if (event.key !== 'Escape' || event.target.matches('input, textarea, select, [contenteditable="true"]')) return;
     const within = event.target.closest('details');
     const panel = within && desired.get(within) ? within :
-      desired.get(feature) ? feature : desired.get(story) ? story : lastPanel;
+      desired.get(story) ? story : lastPanel;
     if (!panel || !desired.get(panel)) return;
     event.preventDefault();
     close(panel);
     writeHistory(panel);
-    (origins.get(panel) || (panel === feature ? mark : panel === story ? document.querySelector('.wordmark') : panel.querySelector('summary'))).focus({preventScroll: true});
+    (origins.get(panel) || (panel === story ? document.querySelector('.wordmark') : panel.querySelector('summary'))).focus({preventScroll: true});
   });
 
   function restoreRoute(initial = false) {
     const key = fragment();
     if (key && key !== 'home' && !known.has(key)) return;
     restoring = true;
-    closeFeature(true, true);
     panels.forEach(panel => setPanel(panel, false, true));
     const panel = known.get(key);
     if (panel) {
@@ -269,7 +198,6 @@
 
   function finishMotion() {
     [...running.values()].forEach(({animation}) => animation.finish());
-    markMotion?.finish();
   }
   window.addEventListener('resize', finishMotion, {passive: true});
   reduced.addEventListener?.('change', finishMotion);
@@ -278,7 +206,6 @@
   window.addEventListener('popstate', () => restoreRoute());
   window.addEventListener('hashchange', () => restoreRoute());
   document.documentElement.classList.add('enhanced');
-  mark.setAttribute('href', '#space-feature');
   sync();
   restoreRoute(true);
 })();

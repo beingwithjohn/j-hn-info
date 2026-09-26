@@ -14,7 +14,7 @@ assert.ok(html.includes('unfold-ambient.js?v=music-only-1'), 'Listening footer r
 assert.ok(html.includes('src="entry.js?v=preload-2"'), 'Remaining media still preloads');
 assert.ok(!/id="artwork"|loader-piece|reference-bg/.test(html + css), 'Striped artwork and its loading animation are removed');
 assert.equal([...html.matchAll(/rel="preload" as="image"/g)].length, 3);
-for (const id of ['space-to-be', 'beings-club', 'arc-network', 'wonderfool', 'in-the-garden', 'story', 'more-story', 'space-feature']) {
+for (const id of ['space-to-be', 'beings-club', 'arc-network', 'wonderfool', 'in-the-garden', 'story', 'more-story']) {
   assert.ok(html.includes('id="' + id + '"'), 'Existing in-page information retained: ' + id);
 }
 const title = html.match(/<title>(.*?)<\/title>/)[1];
@@ -22,8 +22,13 @@ assert.ok(!/creative counsel|creative-counsel/i.test(html), 'Creative counsel is
 assert.ok(html.includes('<span class="wordmark-name" aria-hidden="true">John Ooi</span>'), 'Name is a single text line, not stacked letters');
 assert.match(css, /\.wordmark-name\{display:block;white-space:nowrap;/, 'Name stays on one horizontal line');
 assert.ok(css.includes('body:not(:has(.page :is(.project,.feature)[open]))'), 'Landing fit depends on visible top-level sections, not hidden nested chapters');
-assert.match(css, /\.mark-home\{position:fixed;/, 'Logo dock stays independent of expanding content');
-assert.ok(!/\.mark-home\{position:absolute/.test(css), 'No breakpoint switches the logo back to a moving column');
+assert.match(html, /<footer class="utility">[\s\S]*class="mark-home"/, 'Logo lives in the footer');
+assert.match(css, /\.utility\{position:fixed;/, 'Footer keeps the logo stable while content unfolds');
+assert.ok(!css.includes('--mark-bottom') && !css.includes('padding-right:'), 'No logo lane narrows either text column');
+assert.match(html, /class="space-mark" href="#space-to-be"[^>]+aria-controls="space-to-be"/, 'Logo opens the existing Space to Be section');
+assert.ok(!/circle-flight|circle-destination|id="space-feature"/.test(html + css + read('unfold.js')), 'Logo no longer flies away or opens duplicate content');
+assert.ok(read('unfold.js').includes("key === 'space-feature' ? 'space-to-be' : key"), 'Old logo links still resolve to Space to Be');
+assert.ok(html.indexOf('src="theme.js?v=1"') < html.indexOf('href="unfold.css?'), 'Remembered colour preference is applied before rendering');
 assert.equal(title, 'John Ooi · Meditation Teacher');
 assert.ok(!html.includes('Maybe we should know each other.'), 'Previous invitation removed from visible copy and metadata');
 assert.equal(html.match(/property="og:title" content="([^"]+)"/)[1], title);

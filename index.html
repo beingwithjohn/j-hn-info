@@ -79,8 +79,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@300;400&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="unfold.css?v=personal-5">
-  <script src="unfold.js?v=personal-3" defer></script>
+  <meta name="color-scheme" content="light dark">
+  <script src="theme.js?v=1"></script>
+  <link rel="stylesheet" href="unfold.css?v=footer-theme-2">
+  <script src="unfold.js?v=footer-1" defer></script>
   <script src="entry.js?v=preload-2" defer></script>
   <script src="unfold-ambient.js?v=music-only-1" defer></script>
 </head>
@@ -115,15 +117,6 @@
             <div class="feature-actions"><a class="onward" href="mailto:john@spacetobe.xyz?subject=hello">say hello ↗</a><a class="back" href="#home" data-close="story">back to the page ↙</a></div>
           </div></div>
         </details>
-        <details class="feature space-feature" id="space-feature">
-          <summary class="feature-summary">Space to Be</summary>
-          <div class="disclosure-body"><div class="feature-inner">
-            <div class="circle-destination"></div>
-            <h2>Space to Be</h2>
-            <div class="feature-copy"></div>
-            <a class="back" href="#home" data-close="space-feature">back to the page ↙</a>
-          </div></div>
-        </details>
       </div>
     </div>
     <div class="right-rail">
@@ -135,7 +128,7 @@
             <div class="project-copy" id="space-copy">
               <p>Space to Be is where I work one-to-one. I bring my practice, exploration and experience to meet what’s happening in your life, listening for answers that may already be there.</p>
               <p>There’s room to explore whatever matters. Meditation teaching can be part of it, but it doesn’t have to be.</p>
-              <p class="practical">Online. Only rarely in person, when practical.</p>
+              <p class="practical">Online. In person when practical.</p>
               <a class="onward" href="https://spacetobe.xyz" target="_blank" rel="noopener">explore Space to Be ↗</a>
             </div>
           </div>
@@ -178,12 +171,18 @@
           </div></div>
         </details>
       </nav>
-      <div class="mark-home"><a class="space-mark" href="#space-to-be" aria-label="About Space to Be" aria-controls="space-feature"><svg viewBox="0 0 320 320" aria-hidden="true"><circle cx="160" cy="160" r="71" fill="none" stroke="currentColor" stroke-width="46"/></svg></a></div>
     </div>
   </main>
   <footer class="utility">
     <span id="now-playing"><span id="np-label">last listened to</span><span id="np-track"> · You Can Do Anything by Dana and Alden</span></span>
-    <a class="letters-link" href="https://wonderfool.substack.com" target="_blank" rel="noopener">letters &amp; conversations ↗</a>
+    <div class="footer-actions">
+      <a class="letters-link" href="https://wonderfool.substack.com" target="_blank" rel="noopener" aria-label="letters &amp; conversations"><span class="letters-full">letters &amp; conversations</span><span class="letters-short" aria-hidden="true">letters</span> ↗</a>
+      <button class="theme-toggle" type="button" aria-label="Dark mode" aria-pressed="false" title="Switch to dark mode" hidden>
+        <svg class="theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 15.1A8.8 8.8 0 0 1 8.9 3.7a8.8 8.8 0 1 0 11.4 11.4Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        <svg class="theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <div class="mark-home"><a class="space-mark" href="#space-to-be" aria-label="About Space to Be" aria-controls="space-to-be"><svg viewBox="0 0 320 320" aria-hidden="true"><circle cx="160" cy="160" r="71" fill="none" stroke="currentColor" stroke-width="46"/></svg></a></div>
+    </div>
   </footer>
 </body>
 </html>

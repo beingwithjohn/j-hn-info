@@ -1,7 +1,6 @@
-// Apply before first paint; follow the system until the visitor chooses a theme.
+// Apply before first paint; start dark unless the visitor has chosen a theme.
 (() => {
   const root = document.documentElement;
-  const system = window.matchMedia('(prefers-color-scheme: dark)');
   const key = 'jhn-theme';
   let preference;
   let toggle;
@@ -12,14 +11,13 @@
   } catch { /* Private browsing and file previews may restrict storage. */ }
 
   function apply() {
-    const theme = preference || (system.matches ? 'dark' : 'light');
+    const theme = preference || 'dark';
     root.setAttribute('data-theme', theme);
     if (!toggle) return;
     toggle.setAttribute('aria-pressed', String(theme === 'dark'));
     toggle.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
   }
   apply();
-  system.addEventListener?.('change', apply);
   window.addEventListener('storage', event => {
     if (event.key !== key && event.key !== null) return;
     preference = valid(event.newValue) ? event.newValue : undefined;

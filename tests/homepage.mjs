@@ -29,7 +29,8 @@ assert.ok(!css.includes('--mark-bottom') && !css.includes('padding-right:'), 'No
 assert.match(html, /class="space-mark" href="#space-to-be"[^>]+aria-controls="space-to-be"/, 'Logo opens the existing Space to Be section');
 assert.ok(!/circle-flight|circle-destination|id="space-feature"/.test(html + css + read('unfold.js')), 'Logo no longer flies away or opens duplicate content');
 assert.ok(read('unfold.js').includes("key === 'space-feature' ? 'space-to-be' : key"), 'Old logo links still resolve to Space to Be');
-assert.ok(html.indexOf('src="theme.js?v=1"') < html.indexOf('href="unfold.css?'), 'Remembered colour preference is applied before rendering');
+assert.ok(html.indexOf('src="theme.js?v=2"') < html.indexOf('href="unfold.css?'), 'Remembered colour preference is applied before rendering');
+assert.match(html, /<html[^>]+data-theme="dark"/, 'Page defaults to dark even before the theme script runs');
 assert.equal(title, 'John Ooi · Realisation Partner');
 assert.ok(!html.includes('Maybe we should know each other.'), 'Previous invitation removed from visible copy and metadata');
 assert.equal(html.match(/property="og:title" content="([^"]+)"/)[1], title);
@@ -46,6 +47,12 @@ assert.ok(!structured['@graph'].some(entity => entity['@type'] === 'Service'), '
 assert.ok(html.indexOf('id="introduction"') < html.indexOf('id="projects"'), 'A personal introduction comes before projects');
 assert.match(html, /class="hello">\s*<img class="portrait" src="images\/colourful-flower\.png"/, 'Selected flower image appears beside the name');
 assert.ok(html.includes('rel="preload" as="image" href="images/colourful-flower.png"'), 'Name image is preloaded with the landing');
+for (const size of [16, 32, 180, 512]) {
+  const icon = fs.readFileSync(new URL('images/favicon-' + size + '.png', root));
+  assert.equal(icon.readUInt32BE(16), size, 'Favicon width matches its declared size');
+  assert.equal(icon.readUInt32BE(20), size, 'Favicon height matches its declared size');
+  assert.ok(html.includes('href="images/favicon-' + size + '.png?v=flower-1"'), 'Flower icon linked with a fresh cache key');
+}
 assert.match(html, /id="wonderfool">[\s\S]*?Letters on being/, 'Wonderfool is introduced as letters');
 assert.match(html, /id="in-the-garden">[\s\S]*?My podcast/, 'In the Garden has its own podcast section');
 const podcastSection = html.match(/<details class="project" id="in-the-garden">([\s\S]*?)<\/details>/)[1];

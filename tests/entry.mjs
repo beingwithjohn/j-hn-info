@@ -19,17 +19,15 @@ const flush = async () => { for (let i = 0; i < 20; i++) await Promise.resolve()
 
 // Deterministic loading/timer doubles, not rendered-browser tests.
 function setup(options = {}) {
-  let now = 0, id = 0, removed = false;
+  let now = 0, id = 0;
   const timers = new Map(), classes = new Set(), attributes = new Map();
   const listeners = {}, documentListeners = {}, emitted = [], fontLoads = [];
   const fontReady = deferred(), media = {matches: !!options.reduced};
   media.addEventListener = (_type, fn) => { media.change = fn; };
-  const storage = new Map(options.seen ? [['jhn-intro-seen', '1']] : []);
-  const images = Array.from({length: 4}, (_, i) => {
+  const images = Array.from({length: 3}, (_, i) => {
     const events = {}, decoded = deferred();
     return {
-      id: i === 0 ? 'artwork' : 'image-' + i,
-      loading: 'lazy', complete: !!options.cached, naturalWidth: options.cached ? 400 : 0,
+      id: 'image-' + i, loading: 'lazy', complete: !!options.cached, naturalWidth: options.cached ? 400 : 0,
       decodeCalls: 0, decoded,
       decode() { this.decodeCalls++; return decoded.promise; },
       addEventListener(name, fn) { events[name] = fn; },
@@ -51,7 +49,6 @@ function setup(options = {}) {
       load(spec) { const request = deferred(); fontLoads.push({spec, ...request}); return request.promise; },
       ready: fontReady.promise
     },
-    getElementById(name) { return name === 'artwork' ? images[0] : name === 'site-intro' ? {remove() { removed = true; }} : null; },
     addEventListener: (type, fn) => { documentListeners[type] = fn; }
   };
   const window = {
@@ -60,13 +57,9 @@ function setup(options = {}) {
     dispatchEvent(event) { emitted.push(event.type); listeners[event.type]?.(event); }
   };
   const context = vm.createContext({
-    document, window, location: {search: options.replay ? '?intro=1' : ''}, URLSearchParams, Event,
+    document, window, Event,
     setTimeout(fn, delay) { const key = ++id; timers.set(key, {at: now + delay, fn}); return key; },
-    clearTimeout(key) { timers.delete(key); },
-    sessionStorage: {
-      getItem(key) { if (options.storageBlocked) throw Error('Unavailable'); return storage.get(key); },
-      setItem(key, value) { if (options.storageBlocked) throw Error('Unavailable'); storage.set(key, value); }
-    }
+    clearTimeout(key) { timers.delete(key); }
   });
   vm.runInContext(bootstrap, context);
   if (options.controller !== false) vm.runInContext(source, context);
@@ -82,7 +75,7 @@ function setup(options = {}) {
   };
   const finishFonts = (error = false) => { fontLoads.forEach(f => error ? f.reject(Error('Missing font')) : f.resolve([])); fontReady.resolve(); };
   const finishImages = (error = false) => images.forEach(image => { image.load(error); image.decoded.resolve(); });
-  return {classes, attributes, images, fontLoads, finishFonts, finishImages, tick, media, storage, emitted, listeners, documentListeners, entry: window.jhnEntry, removed: () => removed};
+  return {classes, attributes, images, fontLoads, finishFonts, finishImages, tick, media, emitted, listeners, documentListeners, entry: window.jhnEntry};
 }
 
 const first = setup();
@@ -90,58 +83,43 @@ check(first.classes.has('site-loading') && first.attributes.get('aria-busy') ===
 check(first.images.every(image => image.loading === 'eager'), 'Hidden-section images are eager');
 check(first.fontLoads.length === 6, 'Both typefaces and all declared weights requested');
 first.images[0].load(); first.images[0].decoded.resolve(); await flush();
-check(first.classes.has('intro-art-ready'), 'Assembly starts only after artwork decode');
-await first.tick(1700);
-check(first.classes.has('site-loading'), 'Animation alone does not release unfinished assets');
+check(!first.entry.closed, 'One prepared image does not release unfinished assets');
 first.finishImages(); await flush();
 check(first.classes.has('site-loading'), 'Fonts also gate the reveal');
 first.finishFonts(); await flush();
-check(first.classes.has('intro-leaving') && !first.classes.has('site-loading'), 'Ready page fades in');
-await first.tick(700);
-check(first.entry.closed && first.removed(), 'Opening removed after the transition');
+check(first.entry.closed && !first.classes.has('site-loading'), 'Ready page appears immediately without the retired animation');
 check(!first.attributes.has('aria-busy') && first.emitted.join() === 'jhn:ready', 'Readiness emitted exactly once');
-check(first.storage.get('jhn-intro-seen') === '1', 'First visit remembered for this session');
 
-const cached = setup({cached: true, seen: true});
+const cached = setup({cached: true});
 cached.finishFonts(); await flush();
 check(cached.images.every(image => image.decodeCalls === 1), 'Cached images are decoded too');
 check(!cached.entry.closed, 'Cached download does not bypass decode');
 cached.images.forEach(image => image.decoded.resolve()); await flush();
-check(cached.entry.closed && !cached.classes.has('intro-art-ready'), 'Repeat visit has no artificial animation delay');
-
-for (const options of [{reduced: true, replay: true}, {noDecode: true, noFonts: true, seen: true}]) {
+check(cached.entry.closed, 'Cached page has no artificial animation delay');
+for (const options of [{reduced: true}, {noDecode: true, noFonts: true}]) {
   const app = setup(options); app.finishImages(); app.finishFonts(); await flush();
   check(app.entry.closed, 'Reduced motion and missing optional APIs do not add a delay');
 }
-const replay = setup({seen: true, replay: true});
-replay.finishImages(); replay.finishFonts(); await flush();
-check(!replay.entry.closed && replay.classes.has('intro-art-ready'), 'Explicit replay overrides seen state');
-await replay.tick(2400); check(replay.entry.closed, 'Explicit replay completes');
-
 const blocked = setup({controller: false});
 await blocked.tick(9999); check(!blocked.entry.closed, 'Deadline does not fire early');
-await blocked.tick(1); check(blocked.entry.closed && blocked.removed(), 'Missing entry script fails open at the deadline');
+await blocked.tick(1); check(blocked.entry.closed, 'Missing entry script fails open at the deadline');
 const slow = setup();
 await slow.tick(10000); check(slow.entry.closed, 'Stalled images and fonts cannot trap visitors');
 slow.finishImages(); slow.finishFonts(); await flush();
-check(!slow.classes.has('intro-art-ready') && slow.emitted.length === 1, 'Late assets never resurrect the opening');
-
+check(slow.classes.size === 0 && slow.emitted.length === 1, 'Late assets never hide the page again');
 const errors = setup(); errors.finishImages(true); errors.finishFonts(true); await flush();
-await errors.tick(700);
 check(errors.entry.closed, 'Failed images and fonts still release the page');
-const storage = setup({storageBlocked: true}); storage.finishImages(); storage.finishFonts(); await storage.tick(2400);
-check(storage.entry.closed, 'Storage denied does not prevent entry');
 const escape = setup(); escape.documentListeners.keydown({key: 'Escape'});
-check(escape.entry.closed, 'Escape bypasses the opening');
+check(escape.entry.closed, 'Escape bypasses loading');
 const changed = setup(); changed.media.matches = true; changed.media.change();
-check(changed.entry.closed, 'Changing to reduced motion ends the opening');
+check(changed.entry.closed, 'Changing to reduced motion ends loading');
 const restored = setup(); restored.listeners.pageshow({persisted: true});
 check(restored.entry.closed, 'Back-forward cache restore clears the loading state');
 
 const imagePaths = [...html.matchAll(/<img\b[^>]*\bsrc="([^"]+)"/g)].map(match => match[1]);
 for (const src of imagePaths) check(html.includes('rel="preload" as="image" href="' + src + '"'), 'Preload hint for ' + src);
 check(!html.includes('loading="lazy"'), 'No deferred image fetches on disclosure open');
-check(!/<html[^>]*class=/.test(html) && css.includes('.site-intro{display:none;'), 'No-JS page is not hidden by default');
-check((html.match(/class="loader-piece"/g) || []).length === 5, 'Five original artwork slices');
+check(!/<html[^>]*class=/.test(html), 'No-JS page is not hidden by default');
+check(!/loader-piece|intro-art-ready|reference-bg/.test(html + css + source), 'Retired artwork and animation have no page references');
 check(!source.includes('fetch(') && !source.includes('serviceWorker'), 'No extra fetch layer or persistent service-worker cache');
-console.log(`${checks} entry checks passed: eager media, decoding, fonts, session/replay, deadline, errors, accessibility fallbacks. Browser visual QA not included.`);
+console.log(`${checks} entry checks passed: eager media, decoding, fonts, immediate reveal, deadline, errors and accessibility fallbacks.`);

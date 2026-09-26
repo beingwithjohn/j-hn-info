@@ -3,8 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="preload" as="image" href="images/reference-bg.png" fetchpriority="high">
-  <link rel="preload" as="image" href="images/john-portrait.jpeg">
+  <link rel="preload" as="image" href="images/colourful-flower.png" fetchpriority="high">
   <link rel="preload" as="image" href="images/john-mountains.jpeg">
   <link rel="preload" as="image" href="images/beings-logo-outline.svg">
   <script>
@@ -16,9 +15,8 @@
       if (entry.closed) return;
       entry.closed = true;
       clearTimeout(entry.deadline);
-      root.classList.remove('site-loading', 'intro-art-ready', 'intro-still', 'intro-leaving');
+      root.classList.remove('site-loading');
       root.removeAttribute('aria-busy');
-      document.getElementById('site-intro')?.remove();
       window.dispatchEvent(new Event('jhn:ready'));
     };
     entry.deadline = setTimeout(entry.finish, 10000);
@@ -27,20 +25,20 @@
     window.addEventListener('pageshow', event => { if (event.persisted) entry.finish(); });
   })();
   </script>
-<title>John Ooi · Maybe we should know each other.</title>
-<meta name="description" content="One-to-one work, curious gatherings, letters, conversations and creative collaboration.">
+<title>John Ooi · Meditation Teacher</title>
+<meta name="description" content="I’m John Ooi. A little of my story, what I’m learning, and the people, practices and projects that are part of my life.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="John Ooi">
 <meta property="og:url" content="https://j-hn.info/">
-<meta property="og:title" content="John Ooi · Maybe we should know each other.">
-<meta property="og:description" content="One-to-one work, curious gatherings, letters, conversations and creative collaboration.">
+<meta property="og:title" content="John Ooi · Meditation Teacher">
+<meta property="og:description" content="I’m John Ooi. A little of my story, what I’m learning, and the people, practices and projects that are part of my life.">
 <meta property="og:image" content="https://j-hn.info/images/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Colourful diagonal striped artwork in yellow, green, turquoise, pink, grey and blue">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="John Ooi · Maybe we should know each other.">
-<meta name="twitter:description" content="One-to-one work, curious gatherings, letters, conversations and creative collaboration.">
+<meta name="twitter:title" content="John Ooi · Meditation Teacher">
+<meta name="twitter:description" content="I’m John Ooi. A little of my story, what I’m learning, and the people, practices and projects that are part of my life.">
 <meta name="twitter:image" content="https://j-hn.info/images/og.jpg">
 <meta name="twitter:image:alt" content="Colourful diagonal striped artwork in yellow, green, turquoise, pink, grey and blue">
 <link rel="canonical" href="https://j-hn.info/">
@@ -58,13 +56,8 @@
       "name": "John Ooi",
       "url": "https://j-hn.info/",
       "image": "https://j-hn.info/images/john-portrait.jpeg",
-      "description": "Meditation teacher, spiritual friend, writer and creative counsel.",
-      "hasOccupation": [
-        {"@type": "Occupation", "name": "Meditation teacher"},
-        {"@type": "Occupation", "name": "Writer"},
-        {"@type": "Occupation", "name": "Creative counsel"}
-      ],
-      "knowsAbout": ["meditation", "spiritual friendship", "creative counsel", "project clarity", "creative direction", "strategy"],
+      "description": "John Ooi grew up between cultures and religions in Liverpool. His life has been shaped by travel, medical school, meditation, scientific thinking and spiritual practice.",
+      "knowsAbout": ["meditation", "contemplative practice", "creative collaboration", "writing"],
       "sameAs": [
         "https://spacetobe.xyz",
         "https://beingsclub.com",
@@ -73,13 +66,11 @@
       ]
     },
     {
-      "@type": "Service",
-      "@id": "https://j-hn.info/creative-counsel/#service",
-      "name": "Creative counsel",
-      "url": "https://j-hn.info/creative-counsel/",
-      "description": "Human attention, good questions and judgement for people unsure where a project should begin, what it really wants to be or how its details belong together.",
-      "provider": {"@id": "https://j-hn.info/#john-ooi"},
-      "areaServed": "Worldwide"
+      "@type": "AboutPage",
+      "@id": "https://j-hn.info/#about",
+      "url": "https://j-hn.info/",
+      "name": "John Ooi · Meditation Teacher",
+      "mainEntity": {"@id": "https://j-hn.info/#john-ooi"}
     }
   ]
 }
@@ -87,96 +78,39 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@300;400&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="unfold.css?v=landing-fit-1">
-  <script src="unfold.js?v=entry-1" defer></script>
-  <script src="entry.js?v=entry-1" defer></script>
-  <script src="unfold-ambient.js?v=sparkle-1" defer></script>
+  <link rel="stylesheet" href="unfold.css?v=personal-3">
+  <script src="unfold.js?v=personal-3" defer></script>
+  <script src="entry.js?v=preload-2" defer></script>
+  <script src="unfold-ambient.js?v=music-only-1" defer></script>
 </head>
 <body>
-  <div class="site-intro" id="site-intro" aria-hidden="true">
-    <div class="loader-system">
-      <div class="loader-art"><span class="loader-piece"></span><span class="loader-piece"></span><span class="loader-piece"></span><span class="loader-piece"></span><span class="loader-piece"></span></div>
-    </div>
-  </div>
-  <a class="skip" href="#projects">Skip to work and projects</a>
+  <a class="skip" href="#introduction">Skip to the introduction</a>
   <main class="page" id="home">
     <div class="left-rail">
-      <nav class="work" id="projects" aria-label="Work and projects">
-        <details class="project" id="space-to-be">
-          <summary><span class="work-title">Space to Be</span><span class="work-desc">One-to-one space for navigating change</span></summary>
-          <div class="disclosure-body">
-            <div class="project-copy" id="space-copy">
-              <p>Space to Be is where I work one-to-one. I bring my practice, exploration and experience to meet what’s happening in your life, listening for answers that may already be there.</p>
-              <p>There’s room to explore whatever matters to you. Meditation teaching can be part of it, but it doesn’t have to be. If you’d like to explore working together, just reach out.</p>
-              <p class="practical">Online. Only rarely in person, when practical.</p>
-              <a class="onward" href="https://spacetobe.xyz" target="_blank" rel="noopener">explore Space to Be ↗</a>
-            </div>
-          </div>
-        </details>
-        <details class="project" id="beings-club">
-          <summary><span class="work-title">Beings Club</span><span class="work-desc">A realisationhouse for the curious</span></summary>
-          <div class="disclosure-body"><div class="project-copy">
-            <img class="beings-logo" src="images/beings-logo-outline.svg" alt="" width="180" height="90" loading="eager">
-            <p>I started Beings Club in 2025 to bring curious people with different backgrounds and ways of seeing into spontaneously unfolding conversations. The hope is to discover possibilities we wouldn’t have found alone.</p>
-            <p>We begin with a guided curiosity practice, intended to create shared ground and support what might unfold between us. Curiosity here means an orientation to experience that is open to discovery. We turn it inwards, then offer it to one another.</p>
-            <p class="practical">For the benefit of all beings</p>
-            <a class="onward" href="https://beingsclub.com" target="_blank" rel="noopener">meet Beings Club ↗</a>
-          </div></div>
-        </details>
-        <details class="project" id="arc-network">
-          <summary><span class="work-title">ARC Network</span><span class="work-desc">Offering attuned loving presence</span></summary>
-          <div class="disclosure-body"><div class="project-copy">
-            <p>The ARC Network is a progressively scaling network of practice building planetary infrastructure for the delivery of attuned loving presence to anyone who needs it.</p>
-            <p>I participate as a member, source the network's weekly gathering, and support its development as a founding collaborator.</p>
-            <p class="practical">Planetary in aim. Intimate in practice.</p>
-            <a class="onward" href="https://arcnetwork.is" target="_blank" rel="noopener">get to know the ARC ↗</a>
-          </div></div>
-        </details>
-        <details class="project" id="wonderfool">
-          <summary><span class="work-title">Wonderfool</span><span class="work-desc">Letters &amp; conversations on being</span></summary>
-          <div class="disclosure-body"><div class="project-copy">
-            <p>Wonderfool is my publication on Substack. I write letters on being, published on the first and third Tuesday of each month. It’s a place for questions, reflections and things I’m discovering as I go.</p>
-            <p>It’s also home to In the Garden, my podcast, where I have conversations with wise people, fools, practitioners and humans doing things differently.</p>
-            <p class="practical">Good company for travelling somewhere new.</p>
-            <a class="onward" href="https://wonderfool.substack.com/p/a-message-for-beings-of-space" target="_blank" rel="noopener">read “What Is Happening?” ↗</a>
-            <a class="onward" href="https://wonderfool.substack.com" target="_blank" rel="noopener">more letters &amp; conversations ↗</a>
-          </div></div>
-        </details>
-        <details class="project" id="creative-counsel">
-          <summary><span class="work-title">Creative Counsel</span><span class="work-desc">For what is not yet clear</span></summary>
-          <div class="disclosure-body"><div class="project-copy">
-            <p>Creative counsel is a collaboration around something you want to bring into being. I think with you, ask questions and support you in getting in touch with what you really want. There’s joy in getting clear together, and a growing sense of faith and trust in the process.</p>
-            <p>I listen for the whole. I ask good questions. I offer structure without trying to control what must emerge. I care about work that serves life, and relationships built on trust, mutual fit and the freedom to think together.</p>
-            <p class="practical">Partnerships for creating what's yours.</p>
-            <a class="onward" href="mailto:john@spacetobe.xyz?subject=I%E2%80%99d%20like%20your%20attention%20on%20a%20project">begin a conversation ↗</a>
-          </div></div>
-        </details>
-      </nav>
-      <h1 class="name-home"><a class="wordmark" href="#story" aria-label="About John Ooi" aria-controls="story"><span class="wordmark-name" aria-hidden="true">John Ooi</span></a></h1>
-    </div>
-    <div class="right-rail">
-      <div class="visual-stack">
-        <a class="transmission" id="artwork-button" href="#story" aria-label="About John" aria-controls="story"><img id="artwork" src="images/reference-bg.png" alt="Colourful diagonal striped artwork" width="3749" height="2500" fetchpriority="high"></a>
+      <section class="introduction" id="introduction" aria-labelledby="john-name" tabindex="-1">
+        <header class="hello">
+          <img class="portrait" src="images/colourful-flower.png" alt="Soft rainbow-coloured flower on a blue background" width="1024" height="1024">
+          <h1 class="name-home" id="john-name"><a class="wordmark" href="#story" aria-label="More about John Ooi" aria-controls="story"><span class="wordmark-name" aria-hidden="true">John Ooi</span></a></h1>
+        </header>
+        <p>I grew up in Liverpool, between cultures and religions. I’m curious about life, I love to learn, and I'm sharing what I can.</p>
+        <div class="hello-links"><a href="#story" aria-controls="story">more of my story <span aria-hidden="true">+</span></a><a href="mailto:john@spacetobe.xyz?subject=hello">say hello ↗</a></div>
+      </section>
+      <div class="feature-stack">
         <details class="feature story" id="story">
           <summary class="feature-summary">About John Ooi</summary>
           <div class="disclosure-body"><div class="feature-inner">
-            <header class="story-heading"><img class="portrait" src="images/john-portrait.jpeg" alt="John smiling" width="400" height="400"><h2>John Ooi</h2></header>
-            <p>At the heart of my work is an unfolding relationship with life.</p>
-            <p>I grew up in Liverpool, in a Roman Catholic family, and went to a Jewish primary school. My father is Malay Chinese and my mother is English. I knew what was in front of me wasn’t the only possible world.</p>
-            <p>I’ve learnt that we need each other. People bring out different parts of each other. We support one another by simply being who we are. I get to give and I get to receive, to be curious, to learn, and to discover.</p>
+            <header class="story-heading"><h2>An unfolding relationship with life.</h2></header>
+            <p>I grew up in Liverpool, in a Roman Catholic family, and went to a Jewish primary school. My father is Malay Chinese and my mother is English. I'm trained as a meditation teacher and will soon live in Portugal.</p>
             <details class="chapter" id="more-story"><summary>a little more of the story <span aria-hidden="true">+</span></summary><div class="disclosure-body"><div class="chapter-copy">
-              <p>I travelled as a child, visiting family in Malaysia. Later, an awareness of mortality and ageing drew me towards travel. I love to learn from different cultures and have experiences I couldn’t have at home.</p>
-              <figure class="life-photo"><img src="images/john-mountains.jpeg" alt="John at sunrise in the Huangshan Mountains, wearing an orange puffer jacket" width="3120" height="2080" loading="eager"><figcaption>Huangshan, at sunrise. I went because my grandmother suggested I should.</figcaption></figure>
-              <p>I went to medical school at UCL in London. An identity that had served me well at school didn’t translate to my new life there. I turned to meditation for help with anxiety and panic, and learnt that I was giving my thoughts too much power.</p>
-              <p>During a break from medical school, I volunteered at a school in Nepal, teaching English and science. I asked a child reading from a textbook to use their inside voice, then became curious about where it was for them. It wasn’t in their head. It was in their chest, where their heart was.</p>
-              <p>There are many ways to experience experience.</p>
-              <p>When COVID began, I was evacuated from the Himalayan mountains. Back in the UK, I supported nurses in intensive care units. I have a great appreciation for medicine, and love and respect for my friends who went on to become doctors. But a life in medicine wasn’t what I wanted.</p>
-              <p>During COVID, I started guiding meditations for friends. It just felt right. I didn’t know whether I wanted to become a meditation teacher, but I thought I’d better train.</p>
-              <p>My first training, <a href="https://jackkornfield.com/the-mindfulness-meditation-teacher-certification-program/" target="_blank" rel="noopener" title="Mindfulness Meditation Teacher Certification Program">MMTCP</a> with Jack Kornfield and Tara Brach, opened my heart and gave me confidence. My second, with David Nichtern at Dharma Moon, gave me a great appreciation for precision and technique.</p>
-              <p>I appreciate that simple instructions can bring great freedom.</p>
-              <p>My outlook has been shaped by scientific thinking, spiritual practice, intuition and lived experience. I’ve developed a trust that makes room for doubt and critical thinking. When I work with someone, I bring that experience, ask questions and stay open to what we might discover together.</p>
+              <figure class="life-photo"><img src="images/john-mountains.jpeg" alt="John at sunrise in the Huangshan Mountains, wearing an orange puffer jacket" width="3120" height="2080" loading="eager"><figcaption>Huangshan, at sunrise. 2025. I went because my grandmother suggested it.</figcaption></figure>
+              <p>I went to medical school at UCL in London. Whilst there, I turned to meditation for help with anxiety and panic, and learnt that I was giving my thoughts too much power.</p>
+              <p>During a break from medical school, I volunteered at a school in Nepal. I asked a child reading from a textbook to use their inside voice, then became curious about where it was for them. It wasn’t in their head. It was in their chest, where their heart was.</p>
+              <p>I have learnt that there are many ways to experience experience.</p>
+              <p>When COVID began, I was evacuated from the Himalayan mountains. Back in the UK, I spent time isolating alone in the Scottish Highlands and started guiding meditations for friends. I didn’t know whether I wanted to become a meditation teacher, but I thought I’d better train, so I signed up for the <a href="https://jackkornfield.com/the-mindfulness-meditation-teacher-certification-program/" target="_blank" rel="noopener" title="Mindfulness Meditation Teacher Certification Program">MMTCP</a> with Jack Kornfield and Tara Brach.</p>
+              <p>Soon after, I returned to London for university and started working on intensive care units. I remained at medical school for two more years. I have a great appreciation for medicine, and love and respect for my friends who went on to become doctors. But I learnt that it wasn’t what I wanted, so I left.</p>
+              <p>By then, I had completed the MMTCP. It opened my heart and gave me confidence. Eighteen months later, I trained again with David Nichtern at <a href="https://www.dharmamoon.com/mindfulness-meditation-teacher-training" target="_blank" rel="noopener" title="Dharma Moon Mindfulness Meditation Teacher Training">Dharma Moon</a>, gaining a greater appreciation for precision and technique.</p>
+              <p>Now, I listen to my heart and appreciate that simple instructions can bring great freedom.</p>
             </div></div></details>
-            <p class="invitation">Maybe we should know each other.</p>
             <div class="feature-actions"><a class="onward" href="mailto:john@spacetobe.xyz?subject=hello">say hello ↗</a><a class="back" href="#home" data-close="story">back to the page ↙</a></div>
           </div></div>
         </details>
@@ -190,13 +124,65 @@
           </div></div>
         </details>
       </div>
+    </div>
+    <div class="right-rail">
+      <nav class="work" id="projects" aria-labelledby="projects-heading">
+        <h2 class="section-note" id="projects-heading">What I'm up to:</h2>
+        <details class="project" id="space-to-be">
+          <summary><span class="work-title">Space to Be</span><span class="work-desc">One-to-one with me</span></summary>
+          <div class="disclosure-body">
+            <div class="project-copy" id="space-copy">
+              <p>Space to Be is where I work one-to-one. I bring my practice, exploration and experience to meet what’s happening in your life, listening for answers that may already be there.</p>
+              <p>There’s room to explore whatever matters. Meditation teaching can be part of it, but it doesn’t have to be.</p>
+              <p class="practical">Online. Only rarely in person, when practical.</p>
+              <a class="onward" href="https://spacetobe.xyz" target="_blank" rel="noopener">explore Space to Be ↗</a>
+            </div>
+          </div>
+        </details>
+        <details class="project" id="beings-club">
+          <summary><span class="work-title">Beings Club</span><span class="work-desc">A realisationhouse for the curious</span></summary>
+          <div class="disclosure-body"><div class="project-copy">
+            <img class="beings-logo" src="images/beings-logo-outline.svg" alt="" width="180" height="90" loading="eager">
+            <p>I started Beings Club in 2025 to bring curious people with different backgrounds and ways of seeing into spontaneously unfolding conversations. The hope is to discover possibilities we wouldn’t have found alone.</p>
+            <p>We begin with a guided curiosity practice, intended to create shared ground and support what might unfold between us. Afterwards, we meet in small conversations of two and three. Curiosity here means an orientation to experience that is open to discovery. We turn it inwards, then offer it to one another.</p>
+            <p class="practical">For the benefit of all beings</p>
+            <a class="onward" href="https://beingsclub.com" target="_blank" rel="noopener">meet Beings Club ↗</a>
+          </div></div>
+        </details>
+        <details class="project" id="arc-network">
+          <summary><span class="work-title">ARC Network</span><span class="work-desc">Offering loving attuned presence</span></summary>
+          <div class="disclosure-body"><div class="project-copy">
+            <p>The ARC Network is a progressively scaling network of practice building planetary infrastructure for the delivery of attuned loving presence to anyone who needs it.</p>
+            <p>I participate as a member, source the network's weekly gathering, and support its development as a founding collaborator.</p>
+            <p class="practical">Planetary in aim. Intimate in practice.</p>
+            <a class="onward" href="https://arcnetwork.is" target="_blank" rel="noopener">get to know the ARC ↗</a>
+          </div></div>
+        </details>
+        <details class="project" id="wonderfool">
+          <summary><span class="work-title">Wonderfool</span><span class="work-desc">Letters on being</span></summary>
+          <div class="disclosure-body"><div class="project-copy">
+            <p>Wonderfool is my publication on Substack. I write letters on being. It’s a place for questions, reflections and things I’m discovering as I go.</p>
+            <p class="practical">Good company for travelling somewhere new.</p>
+            <a class="onward" href="https://wonderfool.substack.com/p/a-message-for-beings-of-space" target="_blank" rel="noopener">read “What Is Happening?” ↗</a>
+            <a class="onward" href="https://wonderfool.substack.com" target="_blank" rel="noopener">read Wonderfool ↗</a>
+          </div></div>
+        </details>
+        <details class="project" id="in-the-garden">
+          <summary><span class="work-title">In the Garden</span><span class="work-desc">My podcast</span></summary>
+          <div class="disclosure-body"><div class="project-copy">
+            <p>In the Garden is my podcast, where I have conversations with wise people, fools, practitioners and humans doing things differently.</p>
+            <p>You can listen on Substack or Spotify.</p>
+            <a class="onward" href="https://wonderfool.substack.com/podcast" target="_blank" rel="noopener">listen on Substack ↗</a>
+            <a class="onward" href="https://open.spotify.com/show/76dQ2wEAlHByA0dCkoe2sq" target="_blank" rel="noopener">listen on Spotify ↗</a>
+          </div></div>
+        </details>
+      </nav>
       <div class="mark-home"><a class="space-mark" href="#space-to-be" aria-label="About Space to Be" aria-controls="space-feature"><svg viewBox="0 0 320 320" aria-hidden="true"><circle cx="160" cy="160" r="71" fill="none" stroke="currentColor" stroke-width="46"/></svg></a></div>
     </div>
   </main>
   <footer class="utility">
     <span id="now-playing"><span id="np-label">last listened to</span><span id="np-track"> · You Can Do Anything by Dana and Alden</span></span>
-    <a class="about-trigger" href="#story" aria-controls="story">about ↗</a>
-    <form class="letter-form" id="letter-form" action="https://wonderfool.substack.com/subscribe" method="get" target="_blank" rel="noopener"><label for="letter-email">Get letters</label><input id="letter-email" type="email" name="email" required placeholder="you@somewhere" autocomplete="email"><button type="submit">subscribe ↗</button></form>
+    <a class="letters-link" href="https://wonderfool.substack.com" target="_blank" rel="noopener">letters &amp; conversations ↗</a>
   </footer>
 </body>
 </html>

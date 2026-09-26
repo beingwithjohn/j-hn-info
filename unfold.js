@@ -1,13 +1,14 @@
 // Animate real document height, not overlays. Native details are the fallback.
 (() => {
   const panels = [...document.querySelectorAll('details[id]')];
+  const projects = panels.filter(panel => panel.classList.contains('project'));
   const known = new Map(panels.map(panel => [panel.id, panel]));
   const desired = new Map(panels.map(panel => [panel, panel.open]));
   const running = new Map();
   const origins = new Map();
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const page = document.querySelector('.page');
-  const stack = document.querySelector('.visual-stack');
+  const stack = document.querySelector('.feature-stack');
   const story = known.get('story');
   const feature = known.get('space-feature');
   const space = known.get('space-to-be');
@@ -88,7 +89,7 @@
     destination.append(mark);
     if (immediate || reduced.matches || !from.width) return;
     // Only the SVG travels above the layout. All information stays in normal flow.
-    // Track the destination as the artwork shrinks and the page makes room.
+    // Track the destination as the page makes room for the unfolding information.
     const flight = mark.querySelector('svg').cloneNode(true);
     flight.classList.add('circle-flight');
     flight.setAttribute('aria-hidden', 'true');
@@ -135,6 +136,13 @@
 
   function reveal(panel, origin, immediate = false) {
     if (origin) origins.set(panel, origin);
+    // Current activities share one open slot; the personal story is independent.
+    if (projects.includes(panel) || panel === feature) {
+      projects.forEach(other => {
+        if (other !== panel) setPanel(other, false, immediate);
+      });
+      if (panel !== feature) closeFeature(immediate, panel === space);
+    }
     if (panel === feature) {
       const from = markPosition();
       setPanel(story, false, immediate);
@@ -145,7 +153,7 @@
       moveMark(markDestination, immediate, from);
       return done;
     }
-    if (panel === story || panel === space) closeFeature(immediate, panel === space);
+    if (panel === story) closeFeature(immediate);
     if (panel.id === 'more-story') reveal(story, null, immediate);
     return setPanel(panel, true, immediate);
   }
@@ -197,6 +205,7 @@
       const next = panel.open;
       if (panel === feature && next) reveal(panel, summary, true);
       else if (panel === feature) closeFeature(true);
+      else if (projects.includes(panel) && next) reveal(panel, summary, true);
       else {
         desired.set(panel, next);
         panel.querySelector(':scope > .disclosure-body').inert = !next;

@@ -158,6 +158,8 @@ html.enhanced body:not(:has(.page :is(.project,.feature)[open])){display:flex;fl
   .wordmark,.space-mark{transform:none!important}
 }
 
-/* Prepare the remaining images and fonts without replaying the removed artwork. */
-html.site-loading{cursor:wait}
+/* Prepare images and fonts with a normal cursor, then quietly reveal the page.
+   Opacity only: transforms here would move the fixed logo's containing block. */
 html.site-loading .page,html.site-loading .utility,html.site-loading .skip{visibility:hidden}
+html.site-ready .page,html.site-ready .utility{animation:page-arrive 900ms ease-out both}
+@keyframes page-arrive{from{opacity:0}to{opacity:1}}

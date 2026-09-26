@@ -16,6 +16,7 @@
       entry.closed = true;
       clearTimeout(entry.deadline);
       root.classList.remove('site-loading');
+      root.classList.add('site-ready');
       root.removeAttribute('aria-busy');
       window.dispatchEvent(new Event('jhn:ready'));
     };
@@ -78,7 +79,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@300;400&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="unfold.css?v=personal-3">
+  <link rel="stylesheet" href="unfold.css?v=personal-5">
   <script src="unfold.js?v=personal-3" defer></script>
   <script src="entry.js?v=preload-2" defer></script>
   <script src="unfold-ambient.js?v=music-only-1" defer></script>

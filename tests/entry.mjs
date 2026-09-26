@@ -87,7 +87,8 @@ check(!first.entry.closed, 'One prepared image does not release unfinished asset
 first.finishImages(); await flush();
 check(first.classes.has('site-loading'), 'Fonts also gate the reveal');
 first.finishFonts(); await flush();
-check(first.entry.closed && !first.classes.has('site-loading'), 'Ready page appears immediately without the retired animation');
+check(first.entry.closed && !first.classes.has('site-loading'), 'Ready page starts revealing without an artificial delay');
+check(first.classes.has('site-ready'), 'Prepared assets trigger the fade-in state');
 check(!first.attributes.has('aria-busy') && first.emitted.join() === 'jhn:ready', 'Readiness emitted exactly once');
 
 const cached = setup({cached: true});
@@ -106,7 +107,7 @@ await blocked.tick(1); check(blocked.entry.closed, 'Missing entry script fails o
 const slow = setup();
 await slow.tick(10000); check(slow.entry.closed, 'Stalled images and fonts cannot trap visitors');
 slow.finishImages(); slow.finishFonts(); await flush();
-check(slow.classes.size === 0 && slow.emitted.length === 1, 'Late assets never hide the page again');
+check(!slow.classes.has('site-loading') && slow.classes.has('site-ready') && slow.emitted.length === 1, 'Late assets never hide the page or replay readiness');
 const errors = setup(); errors.finishImages(true); errors.finishFonts(true); await flush();
 check(errors.entry.closed, 'Failed images and fonts still release the page');
 const escape = setup(); escape.documentListeners.keydown({key: 'Escape'});
@@ -115,11 +116,17 @@ const changed = setup(); changed.media.matches = true; changed.media.change();
 check(changed.entry.closed, 'Changing to reduced motion ends loading');
 const restored = setup(); restored.listeners.pageshow({persisted: true});
 check(restored.entry.closed, 'Back-forward cache restore clears the loading state');
+first.entry.finish();
+check(first.emitted.length === 1, 'Repeated finish calls do not retrigger page entry');
 
 const imagePaths = [...html.matchAll(/<img\b[^>]*\bsrc="([^"]+)"/g)].map(match => match[1]);
 for (const src of imagePaths) check(html.includes('rel="preload" as="image" href="' + src + '"'), 'Preload hint for ' + src);
 check(!html.includes('loading="lazy"'), 'No deferred image fetches on disclosure open');
 check(!/<html[^>]*class=/.test(html), 'No-JS page is not hidden by default');
 check(!/loader-piece|intro-art-ready|reference-bg/.test(html + css + source), 'Retired artwork and animation have no page references');
+check(!/cursor\s*:\s*(?:wait|progress)/.test(css), 'Loading never displays a busy cursor');
+check(/html\.site-ready \.page,html\.site-ready \.utility\{animation:page-arrive 900ms ease-out both\}/.test(css), 'Prepared page and footer fade in together');
+check(/@keyframes page-arrive\{from\{opacity:0\}to\{opacity:1\}\}/.test(css), 'Entry animation only changes opacity, keeping the logo fixed');
+check(/@media\(prefers-reduced-motion:reduce\)\{[\s\S]*?animation:none!important/.test(css), 'Reduced-motion users bypass entry animation');
 check(!source.includes('fetch(') && !source.includes('serviceWorker'), 'No extra fetch layer or persistent service-worker cache');
-console.log(`${checks} entry checks passed: eager media, decoding, fonts, immediate reveal, deadline, errors and accessibility fallbacks.`);
+console.log(`${checks} entry checks passed: preloading, fade-in, normal cursor, deadline, errors and accessibility fallbacks.`);

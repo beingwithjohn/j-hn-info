@@ -9,11 +9,13 @@ const gallery = html.match(/<section class="photo-journal"[\s\S]*?<\/section>/)[
 assert.ok(!gallery.includes('<h2') && !gallery.includes('photographs-heading'), 'The journal has no visible heading');
 assert.match(gallery, /aria-label="Photos and films"/, 'The untitled journal still has an accessible region name');
 const figures = [...gallery.matchAll(/<figure class="journal-photo" data-photo="(\d+)"[^>]*>([\s\S]*?)<\/figure>/g)];
-assert.equal(figures.length, 12, 'Ten photographs and two videos have their own figures');
-assert.equal(new Set(figures.map(([, id]) => id)).size, 12, 'Every photograph or video has a stable, unique identity');
+assert.equal(figures.length, 11, 'Nine photographs and two videos have their own figures');
+assert.equal(new Set(figures.map(([, id]) => id)).size, 11, 'Every photograph or video has a stable, unique identity');
 assert.ok(!gallery.includes('data-photo="10"') && !gallery.includes('10-sunset.jpg'), 'Brazil is removed');
 assert.equal(figures[0][1], '11', 'Malaysia is the first photo');
 assert.ok(!gallery.includes('data-photo="9"') && !gallery.includes('09-leaves.jpg'), 'The UK leaves photograph is removed');
+assert.ok(!gallery.includes('data-photo="7"') && !gallery.includes('07-peaks.jpg'), 'The second-to-last China mountain-cliffs photograph is removed');
+assert.equal(figures.at(-1)[1], '8', 'The China sunrise remains the final photograph');
 assert.ok(gallery.includes('01-spain.jpg') && !gallery.includes('01-arches.jpg'), 'Spain uses the replacement photograph');
 const years = figures.map(([, , figure]) => Number(figure.match(/datetime="(\d{4})"/)[1]));
 assert.deepEqual(years, [...years].sort(), 'Photographs run from oldest to newest');
@@ -53,4 +55,4 @@ assert.match(html, /<details class="feature story" id="story">/, 'The story and 
 assert.ok(!css.includes('--journal-peek'), 'The gallery no longer peeks out on the landing');
 assert.ok(!js.includes('rail.scrollBy('), 'Activity navigation uses the document scroll, never a separate rail');
 assert.ok(!/\.video-toggle[^{}]*:hover/.test(css), 'Hovering does not alter the video');
-console.log('Journal checks passed: ten photographs and two silent looping videos unfold only inside the story.');
+console.log('Journal checks passed: nine photographs and two silent looping videos unfold only inside the story.');

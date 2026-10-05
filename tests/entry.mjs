@@ -128,7 +128,7 @@ check(first.emitted.length === 1, 'Repeated finish calls do not retrigger page e
 const entryImages = [...html.matchAll(/<img\b(?=[^>]*data-entry-image)[^>]*\bsrc="([^"]+)"/g)].map(match => match[1]);
 check(entryImages.length === 2, 'Only the flower and story portrait gate entry');
 for (const src of entryImages) check(html.includes('rel="preload" as="image" href="' + src + '"'), 'Preload hint for ' + src);
-check([...html.matchAll(/loading="lazy"/g)].length === 10, 'All journal photos are lazy-loaded behind the story disclosure');
+check([...html.matchAll(/loading="lazy"/g)].length === 9, 'All journal photos are lazy-loaded behind the story disclosure');
 check(!/<html[^>]*class=/.test(html), 'No-JS page is not hidden by default');
 check(!/loader-piece|intro-art-ready|reference-bg/.test(html + css + source), 'Retired artwork and animation have no page references');
 check(!/cursor\s*:\s*(?:wait|progress)/.test(css), 'Loading never displays a busy cursor');

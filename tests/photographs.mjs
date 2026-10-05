@@ -39,7 +39,8 @@ for (const [, id, figure] of figures) {
   assert.ok(fs.existsSync(new URL(image.match(/src="([^"]+)"/)[1], root)));
 }
 assert.match(css, /\.journal-photo img,\.journal-photo video\{[^}]*width:100%;height:auto/, 'The whole frame stays visible without cropping');
-assert.match(css, /@media\(min-width:861px\)\{\s*\.right-rail\{position:sticky;[^}]*max-height:[^}]*overflow-y:auto/, 'Expanded desktop activities remain reachable within the pinned column');
+assert.match(css, /\.enhanced \.right-rail\{position:sticky;top:min\(calc\(var\(--page-top\) - 8px\),var\(--rail-top-limit,0px\)\)/, 'Tall desktop activities can move above the viewport so their bottom remains reachable');
+assert.ok(!/\.right-rail\{[^}]*(?:max-height|overflow-y|overscroll-behavior|scrollbar-width)/.test(css), 'The right column never creates a nested scroll area');
 const parents = [];
 let journalParent;
 for (const [tag] of html.matchAll(/<\/?details\b[^>]*>|<section\b[^>]*class="photo-journal"[^>]*>/g)) {
@@ -50,6 +51,6 @@ for (const [tag] of html.matchAll(/<\/?details\b[^>]*>|<section\b[^>]*class="pho
 assert.deepEqual(journalParent, ['story'], 'The entire gallery is inside the main story disclosure, not the nested longer biography');
 assert.match(html, /<details class="feature story" id="story">/, 'The story and gallery are closed on first load');
 assert.ok(!css.includes('--journal-peek'), 'The gallery no longer peeks out on the landing');
-assert.ok(js.includes("getComputedStyle(rail).position === 'sticky'") && js.includes('rail.scrollBy('), 'Activity navigation scrolls its own rail on desktop');
+assert.ok(!js.includes('rail.scrollBy('), 'Activity navigation uses the document scroll, never a separate rail');
 assert.ok(!/\.video-toggle[^{}]*:hover/.test(css), 'Hovering does not alter the video');
 console.log('Journal checks passed: ten photographs and two silent looping videos unfold only inside the story.');

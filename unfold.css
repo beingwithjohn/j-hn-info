@@ -95,10 +95,11 @@ summary::-webkit-details-marker{display:none}
   .mark-home>.space-mark:hover{transform:scale(1.12)}
 }
 
-/* Photos follow the normal page scroll. Activities stay within reach, with their
-   own overflow only when expanded copy is taller than the available viewport. */
+/* Both columns share the page scroll. A taller activity column may travel up
+   until its bottom is visible; shorter columns stay near the top. */
 @media(min-width:861px){
-  .right-rail{position:sticky;top:calc(var(--page-top) - 8px);align-self:start;max-height:calc(100svh - var(--page-top) - var(--bar) - 8px);overflow-y:auto;overscroll-behavior-y:contain;overflow-anchor:none;scrollbar-width:thin;padding:8px;margin:-8px;scroll-padding-block:12px}
+  .right-rail{align-self:start;padding:8px;margin:-8px}
+  .enhanced .right-rail{position:sticky;top:min(calc(var(--page-top) - 8px),var(--rail-top-limit,0px))}
 }
 @media(min-width:861px) and (max-height:740px){
   .page{--page-top:28px;padding-bottom:24px}

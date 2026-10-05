@@ -26,7 +26,7 @@ assert.ok(!/creative counsel|creative-counsel/i.test(html), 'Creative counsel is
 assert.ok(html.includes('<span class="wordmark-name" aria-hidden="true">John Ooi</span>'), 'Name is a single text line, not stacked letters');
 assert.match(css, /\.wordmark-name\{display:block;white-space:nowrap;/, 'Name stays on one horizontal line');
 assert.ok(!css.includes('height:100svh}'), 'The photo journal is no longer constrained to a single screen');
-assert.match(css, /\.right-rail\{position:sticky;/, 'Current activities stay visible beside the scrolling photos');
+assert.match(css, /\.enhanced \.right-rail\{position:sticky;/, 'Current activities stay visible beside the scrolling photos');
 assert.match(html, /<footer class="utility">[\s\S]*class="mark-home"/, 'Logo lives in the footer');
 assert.match(css, /\.utility\{position:fixed;/, 'Footer keeps the logo stable while content unfolds');
 assert.ok(!css.includes('--mark-bottom') && !css.includes('padding-right:'), 'No logo lane narrows either text column');

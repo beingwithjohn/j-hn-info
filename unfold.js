@@ -10,6 +10,8 @@
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const page = document.querySelector('.page');
   const stack = document.querySelector('.feature-stack');
+  const rail = document.querySelector('.right-rail');
+  const utility = document.querySelector('.utility');
   const story = known.get('story');
   const space = known.get('space-to-be');
   const mark = document.querySelector('.space-mark');
@@ -136,18 +138,17 @@
   function keepVisible(panel) {
     const target = panel;
     const rect = target.getBoundingClientRect();
-    const rail = target.closest('.right-rail');
-    // A desktop activity should scroll its own column, not move the photo journal.
-    if (rail && getComputedStyle(rail).position === 'sticky') {
-      const bounds = rail.getBoundingClientRect();
-      if (rect.top < bounds.top + 8 || rect.top > bounds.bottom - 100) {
-        rail.scrollBy({top: rect.top - bounds.top - 12, behavior: reduced.matches ? 'auto' : 'smooth'});
-      }
-      return;
-    }
     if (rect.top < 16 || rect.top > window.innerHeight - 140) {
       target.scrollIntoView({block: 'start', behavior: reduced.matches ? 'auto' : 'smooth'});
     }
+  }
+
+  function updateRailOffset() {
+    // No nested scrolling: let a tall column pass above the viewport before
+    // pinning its bottom clear of the fixed footer. Observe the animated height
+    // too, so opening a section never clips the activities below it.
+    const limit = window.innerHeight - utility.getBoundingClientRect().height - 16 - rail.getBoundingClientRect().height;
+    rail.style.setProperty('--rail-top-limit', `${limit}px`);
   }
 
   function toggle(panel, origin) {
@@ -240,6 +241,15 @@
 
   function finishMotion() {
     [...running.values()].forEach(({animation}) => animation.finish());
+    updateRailOffset();
+  }
+  if (typeof ResizeObserver === 'function') {
+    const railObserver = new ResizeObserver(updateRailOffset);
+    railObserver.observe(rail);
+    railObserver.observe(utility);
+  } else {
+    // Without size observation, normal document flow keeps every link usable.
+    rail.style.position = 'static';
   }
   window.addEventListener('resize', finishMotion, {passive: true});
   reduced.addEventListener?.('change', finishMotion);
@@ -250,4 +260,5 @@
   document.documentElement.classList.add('enhanced');
   sync();
   restoreRoute(true);
+  updateRailOffset();
 })();

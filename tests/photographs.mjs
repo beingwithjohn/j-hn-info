@@ -9,8 +9,10 @@ const gallery = html.match(/<section class="photo-journal"[\s\S]*?<\/section>/)[
 assert.ok(!gallery.includes('<h2') && !gallery.includes('photographs-heading'), 'The journal has no visible heading');
 assert.match(gallery, /aria-label="Photos and films"/, 'The untitled journal still has an accessible region name');
 const figures = [...gallery.matchAll(/<figure class="journal-photo" data-photo="(\d+)"[^>]*>([\s\S]*?)<\/figure>/g)];
-assert.equal(figures.length, 13, 'Eleven photographs and two videos have their own figures');
-assert.equal(new Set(figures.map(([, id]) => id)).size, 13, 'Every photograph or video has a stable, unique identity');
+assert.equal(figures.length, 12, 'Ten photographs and two videos have their own figures');
+assert.equal(new Set(figures.map(([, id]) => id)).size, 12, 'Every photograph or video has a stable, unique identity');
+assert.ok(!gallery.includes('data-photo="10"') && !gallery.includes('10-sunset.jpg'), 'Brazil is removed');
+assert.equal(figures[0][1], '11', 'Malaysia is the first photo');
 assert.ok(!gallery.includes('data-photo="9"') && !gallery.includes('09-leaves.jpg'), 'The UK leaves photograph is removed');
 assert.ok(gallery.includes('01-spain.jpg') && !gallery.includes('01-arches.jpg'), 'Spain uses the replacement photograph');
 const years = figures.map(([, , figure]) => Number(figure.match(/datetime="(\d{4})"/)[1]));
@@ -38,7 +40,9 @@ for (const [, id, figure] of figures) {
 }
 assert.match(css, /\.journal-photo img,\.journal-photo video\{[^}]*width:100%;height:auto/, 'The whole frame stays visible without cropping');
 assert.match(css, /@media\(min-width:861px\)\{\s*\.right-rail\{position:sticky;[^}]*max-height:[^}]*overflow-y:auto/, 'Expanded desktop activities remain reachable within the pinned column');
-assert.match(css, /\.left-rail\{display:contents\}[\s\S]*\.right-rail\{order:2\}[\s\S]*\.photo-journal\{order:3;/, 'Mobile shows activities before the long photo sequence');
+assert.ok(html.indexOf('class="opening"') < html.indexOf('class="right-rail"') && html.indexOf('class="right-rail"') < html.indexOf('class="photo-journal"'), 'Mobile opening contains the introduction and activities before the journal');
+assert.match(css, /--journal-peek:calc\(var\(--journal-width\) \/ 15\)/, 'A tenth of the 3:2 first photo peeks above the footer');
+assert.match(css, /grid-template-rows:minmax\(calc\(100svh - var\(--page-top\) - var\(--bar\) - var\(--journal-peek\)\),auto\)/, 'The desktop opening reserves space before the journal');
 assert.ok(js.includes("getComputedStyle(rail).position === 'sticky'") && js.includes('rail.scrollBy('), 'Activity navigation scrolls its own rail on desktop');
 assert.ok(!/\.video-toggle[^{}]*:hover/.test(css), 'Hovering does not alter the video');
-console.log('Journal checks passed: eleven photographs, two silent looping videos, captions, chronology and responsive scroll structure.');
+console.log('Journal checks passed: ten photographs, two silent looping videos, captions, chronology and a subtle gallery peek.');

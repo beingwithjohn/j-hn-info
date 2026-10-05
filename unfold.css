@@ -10,7 +10,7 @@ a,summary{-webkit-tap-highlight-color:transparent}
 ::selection{background:#e0a5c9;color:#101210}
 .skip{position:fixed;top:12px;left:12px;z-index:10;padding:12px;background:var(--paper);transform:translateY(-200%)}
 .skip:focus{transform:none}
-.page{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.82fr);gap:8%;width:100%;max-width:1280px;margin-inline:auto;min-height:calc(100svh - var(--bar));padding:clamp(32px,9vh,96px) var(--gutter) 4vh}
+.page{--page-top:clamp(32px,9vh,96px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.82fr);gap:8%;width:100%;max-width:1280px;margin-inline:auto;min-height:calc(100svh - var(--bar));padding:var(--page-top) var(--gutter) 4vh}
 .left-rail,.right-rail{display:flex;flex-direction:column;min-width:0}
 .left-rail{gap:0}
 .introduction{max-width:33rem;scroll-margin-top:24px}
@@ -56,6 +56,14 @@ summary::-webkit-details-marker{display:none}
 .life-photo{margin:18px 0 28px}
 .life-photo img{display:block;width:100%;height:auto}
 .life-photo figcaption{font-family:'JetBrains Mono',monospace;font-size:.8125rem;line-height:1.6;color:var(--quiet);margin-top:12px}
+.photo-journal{margin-top:56px;min-width:0}
+.journal-photo+.journal-photo{margin-top:48px}
+.journal-photo img,.journal-photo video{display:block;width:100%;height:auto;background:var(--rule)}
+.journal-photo video{scroll-margin-top:24px}
+.journal-photo figcaption{display:flex;gap:16px;margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:.75rem;line-height:1.6;color:var(--quiet)}
+.journal-photo figcaption time{margin-left:auto;text-align:right}
+.video-toggle{display:block;width:100%;padding:0;border:0;background:none;color:inherit;line-height:0;-webkit-tap-highlight-color:transparent}
+.video-toggle video{pointer-events:none}
 .feature-actions{display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex-wrap:wrap}
 .back{display:block;width:fit-content;margin-top:24px;font-family:'JetBrains Mono',monospace;font-size:.875rem;color:var(--quiet)}
 .back:hover{color:var(--ink)}
@@ -86,16 +94,13 @@ summary::-webkit-details-marker{display:none}
   .mark-home>.space-mark:hover{transform:scale(1.12)}
 }
 
-/* The introduction and current activities share a quiet, text-led landing.
-   Stories still unfold in place; nothing is clipped when more room is needed. */
-html.enhanced body:not(:has(.page :is(.project,.feature)[open])){display:flex;flex-direction:column;height:100svh}
-.enhanced .page:not(:has(.project[open],.feature[open])){flex:1;min-height:0}
-.enhanced .page:not(:has(.project[open],.feature[open]))+.utility{flex-shrink:0}
+/* Photos follow the normal page scroll. Activities stay within reach, with their
+   own overflow only when expanded copy is taller than the available viewport. */
 @media(min-width:861px){
-  .page.has-feature:not(:has(.project[open])) .right-rail{position:sticky;top:32px;align-self:start}
+  .right-rail{position:sticky;top:calc(var(--page-top) - 8px);align-self:start;max-height:calc(100svh - var(--page-top) - var(--bar) - 8px);overflow-y:auto;overscroll-behavior-y:contain;overflow-anchor:none;scrollbar-width:thin;padding:8px;margin:-8px;scroll-padding-block:12px}
 }
 @media(min-width:861px) and (max-height:740px){
-  .page{padding-top:28px;padding-bottom:24px}
+  .page{--page-top:28px;padding-bottom:24px}
   .portrait{width:52px;height:52px}
   .introduction>p{margin-top:16px;font-size:1rem;line-height:1.45}
   .hello-links{margin-top:16px}
@@ -106,12 +111,17 @@ html.enhanced body:not(:has(.page :is(.project,.feature)[open])){display:flex;fl
 @media(max-width:860px){
   :root{--gutter:24px}
   .page{display:flex;flex-direction:column;gap:36px;max-width:640px;padding:24px var(--gutter)}
+  .left-rail{display:contents}
+  .introduction{order:0}
+  .feature-stack{order:1}
+  .right-rail{order:2}
+  .photo-journal{order:3;margin-top:12px}
   .hello{gap:16px}
   .portrait{width:52px;height:52px}
   .wordmark-name{font-size:2.25rem}
   .introduction>p{margin-top:16px;font-size:1rem;line-height:1.5}
   .hello-links{margin-top:16px;font-size:.75rem}
-  .feature-stack{margin-top:32px}
+  .feature-stack{margin-top:0}
   .work{gap:12px}
   .section-note{margin-bottom:4px}
   .work-title{font-size:1.25rem}
@@ -119,8 +129,6 @@ html.enhanced body:not(:has(.page :is(.project,.feature)[open])){display:flex;fl
   .utility{gap:16px;font-size:.6875rem}
   .footer-actions{gap:8px}
   #now-playing{font-size:.6875rem}
-  .enhanced .page:not(:has(.project[open],.feature[open])){padding-top:clamp(16px,3svh,24px);padding-bottom:16px}
-  .enhanced .page:not(:has(.project[open],.feature[open])) .right-rail{position:relative;margin-top:0}
 }
 @media(max-width:599px){
   .letters-full{display:none}
@@ -132,27 +140,6 @@ html.enhanced body:not(:has(.page :is(.project,.feature)[open])){display:flex;fl
   .hello-links{gap:10px 20px}
   .work-title{font-size:1.125rem}
   .utility{gap:12px}
-}
-@media(max-width:599px) and (max-height:640px){
-  .enhanced .page:not(:has(.project[open],.feature[open])){gap:24px;padding-top:16px;padding-bottom:16px}
-  .enhanced .page:not(:has(.project[open],.feature[open])) .introduction>p,
-  .enhanced .page:not(:has(.project[open],.feature[open])) .hello-links{margin-top:12px}
-  .enhanced .page:not(:has(.project[open],.feature[open])) .work{gap:8px}
-  .enhanced .page:not(:has(.project[open],.feature[open])) .work-desc{display:none}
-}
-@media(min-width:600px) and (max-height:550px){
-  :root{--bar:56px}
-  .enhanced .page:not(:has(.project[open],.feature[open])){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);max-width:1280px;gap:6%;padding:24px var(--gutter)}
-  .enhanced .page:not(:has(.project[open],.feature[open])) .portrait{width:44px;height:44px}
-  .enhanced .page:not(:has(.project[open],.feature[open])) .wordmark-name{font-size:1.8rem}
-  .enhanced .page:not(:has(.project[open],.feature[open])) .hello{gap:12px}
-  .enhanced .page:not(:has(.project[open],.feature[open])) .introduction>p{font-size:.9375rem;line-height:1.45;margin-top:16px}
-  .enhanced .page:not(:has(.project[open],.feature[open])) .hello-links{margin-top:16px;font-size:.6875rem;gap:10px 16px}
-  .enhanced .page:not(:has(.project[open],.feature[open])) .right-rail{position:relative;margin-top:0}
-  .enhanced .page:not(:has(.project[open],.feature[open])) .work{gap:10px}
-  .enhanced .page:not(:has(.project[open],.feature[open])) .section-note{font-size:.6875rem;margin-bottom:4px}
-  .enhanced .page:not(:has(.project[open],.feature[open])) .work-title{font-size:1.125rem}
-  .enhanced .page:not(:has(.project[open],.feature[open])) .work-desc{display:none}
 }
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}

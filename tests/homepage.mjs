@@ -11,9 +11,9 @@ for (const [, src] of html.matchAll(/(?:src|href)="([^"#]+)"/g)) {
   assert.ok(fs.existsSync(new URL(src.split(/[?#]/)[0], root)), 'Local asset exists: ' + src);
 }
 assert.ok(html.includes('unfold-ambient.js?v=music-only-1'), 'Listening footer remains loaded without hover audio');
-assert.ok(html.includes('src="entry.js?v=preload-2"'), 'Remaining media still preloads');
+assert.ok(html.includes('src="entry.js?v=photographs-1"'), 'Landing media uses the selective preload controller');
 assert.ok(!/id="artwork"|loader-piece|reference-bg/.test(html + css), 'Striped artwork and its loading animation are removed');
-assert.equal([...html.matchAll(/rel="preload" as="image"/g)].length, 2);
+assert.equal([...html.matchAll(/rel="preload" as="image"/g)].length, 3);
 assert.ok(!/beings-logo/.test(html + css), 'Beings Club section has no logo or unnecessary preload');
 for (const id of ['space-to-be', 'beings-club', 'arc-network', 'wonderfool', 'in-the-garden', 'story', 'more-story']) {
   assert.ok(html.includes('id="' + id + '"'), 'Existing in-page information retained: ' + id);
@@ -22,7 +22,8 @@ const title = html.match(/<title>(.*?)<\/title>/)[1];
 assert.ok(!/creative counsel|creative-counsel/i.test(html), 'Creative counsel is no longer on the personal homepage');
 assert.ok(html.includes('<span class="wordmark-name" aria-hidden="true">John Ooi</span>'), 'Name is a single text line, not stacked letters');
 assert.match(css, /\.wordmark-name\{display:block;white-space:nowrap;/, 'Name stays on one horizontal line');
-assert.ok(css.includes('body:not(:has(.page :is(.project,.feature)[open]))'), 'Landing fit depends on visible top-level sections, not hidden nested chapters');
+assert.ok(!css.includes('height:100svh}'), 'The photo journal is no longer constrained to a single screen');
+assert.match(css, /\.right-rail\{position:sticky;/, 'Current activities stay visible beside the scrolling photos');
 assert.match(html, /<footer class="utility">[\s\S]*class="mark-home"/, 'Logo lives in the footer');
 assert.match(css, /\.utility\{position:fixed;/, 'Footer keeps the logo stable while content unfolds');
 assert.ok(!css.includes('--mark-bottom') && !css.includes('padding-right:'), 'No logo lane narrows either text column');

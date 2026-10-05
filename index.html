@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="preload" as="image" href="images/colourful-flower.png" fetchpriority="high">
   <link rel="preload" as="image" href="images/john-mountains.jpeg">
+  <link rel="preload" as="image" href="images/photographs/10-sunset.jpg">
   <script>
   // Fail open even if the deferred entry script never downloads or runs.
   (() => {
@@ -81,9 +82,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@300;400&amp;display=swap" rel="stylesheet">
   <meta name="color-scheme" content="dark light">
   <script src="theme.js?v=2"></script>
-  <link rel="stylesheet" href="unfold.css?v=footer-theme-3">
-  <script src="unfold.js?v=footer-1" defer></script>
-  <script src="entry.js?v=preload-2" defer></script>
+  <link rel="stylesheet" href="unfold.css?v=photographs-3">
+  <script src="unfold.js?v=photographs-1" defer></script>
+  <script src="entry.js?v=photographs-1" defer></script>
+  <script src="journal-video.js?v=2" defer></script>
   <script src="unfold-ambient.js?v=music-only-1" defer></script>
 </head>
 <body>
@@ -92,7 +94,7 @@
     <div class="left-rail">
       <section class="introduction" id="introduction" aria-labelledby="john-name" tabindex="-1">
         <header class="hello">
-          <img class="portrait" src="images/colourful-flower.png" alt="Soft rainbow-coloured flower on a blue background" width="1024" height="1024">
+          <img class="portrait" src="images/colourful-flower.png" alt="Soft rainbow-coloured flower on a blue background" width="1024" height="1024" data-entry-image>
           <h1 class="name-home" id="john-name"><a class="wordmark" href="#story" aria-label="More about John Ooi" aria-controls="story"><span class="wordmark-name" aria-hidden="true">John Ooi</span></a></h1>
         </header>
         <p>I grew up in Liverpool, between cultures and religions. I’m curious about life, I love to learn, and I'm sharing what I can.</p>
@@ -105,7 +107,7 @@
             <header class="story-heading"><h2>An unfolding relationship with life.</h2></header>
             <p>I grew up in Liverpool, in a Roman Catholic family, and went to a Jewish primary school. My father is Malay Chinese and my mother is English. I'm trained as a meditation teacher and will soon live in Portugal.</p>
             <details class="chapter" id="more-story"><summary>a little more of the story <span aria-hidden="true">+</span></summary><div class="disclosure-body"><div class="chapter-copy">
-              <figure class="life-photo"><img src="images/john-mountains.jpeg" alt="John at sunrise in the Huangshan Mountains, wearing an orange puffer jacket" width="3120" height="2080" loading="eager"><figcaption>Huangshan, at sunrise. 2025. I went because my grandmother suggested it.</figcaption></figure>
+              <figure class="life-photo"><img src="images/john-mountains.jpeg" alt="John at sunrise in the Huangshan Mountains, wearing an orange puffer jacket" width="3120" height="2080" loading="eager" data-entry-image><figcaption>Huangshan, at sunrise. 2025. I went because my grandmother suggested it.</figcaption></figure>
               <p>I went to medical school at UCL in London. Whilst there, I turned to meditation for help with anxiety and panic, and learnt that I was giving my thoughts too much power.</p>
               <p>During a break from medical school, I volunteered at a school in Nepal. I asked a child reading from a textbook to use their inside voice, then became curious about where it was for them. It wasn’t in their head. It was in their chest, where their heart was.</p>
               <p>I have learnt that there are many ways to experience experience.</p>
@@ -118,6 +120,68 @@
           </div></div>
         </details>
       </div>
+      <section class="photo-journal" id="photographs" aria-label="Photos and films">
+        <figure class="journal-photo" data-photo="10">
+          <img src="images/photographs/10-sunset.jpg" alt="People silhouetted on a rocky ridge watching the sun set over the sea" width="1089" height="721" decoding="async" data-entry-image>
+          <figcaption><span>Brazil</span><time datetime="2019">2019</time></figcaption>
+        </figure>
+        <figure class="journal-photo" data-photo="11">
+          <img src="images/photographs/11-malaysia.jpg" alt="Ornate temple rooftops and a tall pagoda beneath clouds, framed by a film light leak" width="1086" height="724" loading="lazy" decoding="async">
+          <figcaption><span>Malaysia</span><time datetime="2019">2019</time></figcaption>
+        </figure>
+        <figure class="journal-photo" data-photo="6">
+          <img src="images/photographs/06-snow.jpg" alt="Walkers crossing a broad snow-covered mountain valley under a grey sky" width="1086" height="724" loading="lazy" decoding="async">
+          <figcaption><span>Nepal</span><time datetime="2020">2020</time></figcaption>
+        </figure>
+        <figure class="journal-photo" data-photo="5">
+          <img src="images/photographs/05-dusk.jpg" alt="An orange and violet evening sky over water and dark headlands" width="1086" height="724" loading="lazy" decoding="async">
+          <figcaption><span>Scotland</span><time datetime="2020">2020</time></figcaption>
+        </figure>
+        <figure class="journal-photo" data-photo="3">
+          <img src="images/photographs/03-tree.jpg" alt="A close view of textured tree bark in a green park" width="1084" height="724" loading="lazy" decoding="async">
+          <figcaption><span>England</span><time datetime="2021">2021</time></figcaption>
+        </figure>
+        <figure class="journal-photo" data-photo="4">
+          <img src="images/photographs/04-valley.jpg" alt="Two walkers on a narrow path through a green mountain valley" width="1086" height="724" loading="lazy" decoding="async">
+          <figcaption><span>England</span><time datetime="2021">2021</time></figcaption>
+        </figure>
+        <figure class="journal-photo" data-photo="1">
+          <img src="images/photographs/01-spain.jpg" alt="A palace and wooded hills beneath distant snowy mountains and a wide, clouded sky" width="1089" height="722" loading="lazy" decoding="async">
+          <figcaption><span>Spain</span><time datetime="2022">2022</time></figcaption>
+        </figure>
+        <figure class="journal-photo" data-photo="2">
+          <img src="images/photographs/02-coast.jpg" alt="Blue sea beyond a sunlit rocky coast, with a pink light leak at the edge" width="1086" height="724" loading="lazy" decoding="async">
+          <figcaption><span>Portugal</span><time datetime="2022">2022</time></figcaption>
+        </figure>
+        <figure class="journal-photo" data-photo="13" id="argentina-2023">
+          <button class="video-toggle" type="button" aria-label="Sound for Argentina video" aria-pressed="false" aria-describedby="argentina-caption">
+            <video class="journal-video" width="1280" height="720" poster="images/photographs/13-argentina.jpg" preload="none" muted loop playsinline aria-label="Snow-covered mountains in Argentina">
+              <source src="media/argentina-2023.mp4" type="video/mp4">
+            </video>
+          </button>
+          <figcaption id="argentina-caption"><span>Argentina</span><time datetime="2023">2023</time></figcaption>
+        </figure>
+        <figure class="journal-photo" data-photo="14" id="new-zealand-2023">
+          <button class="video-toggle" type="button" aria-label="Sound for New Zealand video" aria-pressed="false" aria-describedby="new-zealand-caption">
+            <video class="journal-video" width="1280" height="720" poster="images/photographs/14-new-zealand.jpg" preload="none" muted loop playsinline aria-label="A green tent among rocks beneath pink-lit snowy mountains in New Zealand">
+              <source src="media/new-zealand-2023.mp4" type="video/mp4">
+            </video>
+          </button>
+          <figcaption id="new-zealand-caption"><span>New Zealand</span><time datetime="2023">2023</time></figcaption>
+        </figure>
+        <figure class="journal-photo" data-photo="12">
+          <img src="images/photographs/12-philippines.jpg" alt="An outrigger boat silhouetted on sunlit water between islands" width="2178" height="1444" loading="lazy" decoding="async">
+          <figcaption><span>Philippines</span><time datetime="2024">2024</time></figcaption>
+        </figure>
+        <figure class="journal-photo" data-photo="7">
+          <img src="images/photographs/07-peaks.jpg" alt="Pine trees growing on steep sunlit rock faces above layers of misty mountains" width="1840" height="1232" loading="lazy" decoding="async">
+          <figcaption><span>China</span><time datetime="2025">2025</time></figcaption>
+        </figure>
+        <figure class="journal-photo" data-photo="8">
+          <img src="images/photographs/08-sunrise.jpg" alt="Golden sunlight above overlapping mountain silhouettes" width="1840" height="1232" loading="lazy" decoding="async">
+          <figcaption><span>China</span><time datetime="2025">2025</time></figcaption>
+        </figure>
+      </section>
     </div>
     <div class="right-rail">
       <nav class="work" id="projects" aria-labelledby="projects-heading">

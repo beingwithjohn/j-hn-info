@@ -1,4 +1,4 @@
-// All inline disclosures are already in the document. Prepare their media too.
+// Prepare the landing and story media without making entry wait on the whole journal.
 (() => {
   const entry = window.jhnEntry;
   if (!entry) return;
@@ -18,7 +18,7 @@
     return loaded.then(() => image.naturalWidth && image.decode ? image.decode().catch(() => {}) : undefined);
   };
 
-  const images = new Map([...document.images].map(image => [image, prepareImage(image)]));
+  const images = new Map([...document.querySelectorAll('img[data-entry-image]')].map(image => [image, prepareImage(image)]));
 
   // Hidden disclosures use weights that document.fonts.ready alone may not load.
   const fonts = document.fonts ? Promise.allSettled([

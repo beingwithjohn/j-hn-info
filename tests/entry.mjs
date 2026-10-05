@@ -24,7 +24,7 @@ function setup(options = {}) {
   const listeners = {}, documentListeners = {}, emitted = [], fontLoads = [];
   const fontReady = deferred(), media = {matches: !!options.reduced};
   media.addEventListener = (_type, fn) => { media.change = fn; };
-  const images = Array.from({length: 2}, (_, i) => {
+  const images = Array.from({length: 3}, (_, i) => {
     const events = {}, decoded = deferred();
     return {
       id: 'image-' + i, loading: 'lazy', complete: !!options.cached, naturalWidth: options.cached ? 400 : 0,
@@ -39,12 +39,17 @@ function setup(options = {}) {
     };
   });
   if (options.noDecode) images.forEach(image => { image.decode = undefined; });
+  const galleryImages = [{loading: 'lazy', complete: false}];
   const document = {
     documentElement: {
       classList: {add: (...names) => names.forEach(n => classes.add(n)), remove: (...names) => names.forEach(n => classes.delete(n))},
       setAttribute: (name, value) => attributes.set(name, value), removeAttribute: name => attributes.delete(name)
     },
-    images,
+    images: [...images, ...galleryImages],
+    querySelectorAll: selector => {
+      assert.equal(selector, 'img[data-entry-image]');
+      return images;
+    },
     fonts: options.noFonts ? undefined : {
       load(spec) { const request = deferred(); fontLoads.push({spec, ...request}); return request.promise; },
       ready: fontReady.promise
@@ -75,7 +80,7 @@ function setup(options = {}) {
   };
   const finishFonts = (error = false) => { fontLoads.forEach(f => error ? f.reject(Error('Missing font')) : f.resolve([])); fontReady.resolve(); };
   const finishImages = (error = false) => images.forEach(image => { image.load(error); image.decoded.resolve(); });
-  return {classes, attributes, images, fontLoads, finishFonts, finishImages, tick, media, emitted, listeners, documentListeners, entry: window.jhnEntry};
+  return {classes, attributes, images, galleryImages, fontLoads, finishFonts, finishImages, tick, media, emitted, listeners, documentListeners, entry: window.jhnEntry};
 }
 
 const first = setup();
@@ -88,6 +93,7 @@ first.finishImages(); await flush();
 check(first.classes.has('site-loading'), 'Fonts also gate the reveal');
 first.finishFonts(); await flush();
 check(first.entry.closed && !first.classes.has('site-loading'), 'Ready page starts revealing without an artificial delay');
+check(first.galleryImages.every(image => image.loading === 'lazy' && !image.complete), 'Unloaded later photos never block entry or become eager');
 check(first.classes.has('site-ready'), 'Prepared assets trigger the fade-in state');
 check(!first.attributes.has('aria-busy') && first.emitted.join() === 'jhn:ready', 'Readiness emitted exactly once');
 
@@ -119,9 +125,10 @@ check(restored.entry.closed, 'Back-forward cache restore clears the loading stat
 first.entry.finish();
 check(first.emitted.length === 1, 'Repeated finish calls do not retrigger page entry');
 
-const imagePaths = [...html.matchAll(/<img\b[^>]*\bsrc="([^"]+)"/g)].map(match => match[1]);
-for (const src of imagePaths) check(html.includes('rel="preload" as="image" href="' + src + '"'), 'Preload hint for ' + src);
-check(!html.includes('loading="lazy"'), 'No deferred image fetches on disclosure open');
+const entryImages = [...html.matchAll(/<img\b(?=[^>]*data-entry-image)[^>]*\bsrc="([^"]+)"/g)].map(match => match[1]);
+check(entryImages.length === 3, 'Only the flower, story portrait and first journal photo gate entry');
+for (const src of entryImages) check(html.includes('rel="preload" as="image" href="' + src + '"'), 'Preload hint for ' + src);
+check([...html.matchAll(/loading="lazy"/g)].length === 10, 'Later journal photos are lazy-loaded');
 check(!/<html[^>]*class=/.test(html), 'No-JS page is not hidden by default');
 check(!/loader-piece|intro-art-ready|reference-bg/.test(html + css + source), 'Retired artwork and animation have no page references');
 check(!/cursor\s*:\s*(?:wait|progress)/.test(css), 'Loading never displays a busy cursor');

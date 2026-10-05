@@ -107,6 +107,15 @@
   function keepVisible(panel) {
     const target = panel;
     const rect = target.getBoundingClientRect();
+    const rail = target.closest('.right-rail');
+    // A desktop activity should scroll its own column, not move the photo journal.
+    if (rail && getComputedStyle(rail).position === 'sticky') {
+      const bounds = rail.getBoundingClientRect();
+      if (rect.top < bounds.top + 8 || rect.top > bounds.bottom - 100) {
+        rail.scrollBy({top: rect.top - bounds.top - 12, behavior: reduced.matches ? 'auto' : 'smooth'});
+      }
+      return;
+    }
     if (rect.top < 16 || rect.top > window.innerHeight - 140) {
       target.scrollIntoView({block: 'start', behavior: reduced.matches ? 'auto' : 'smooth'});
     }

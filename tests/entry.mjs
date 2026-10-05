@@ -24,7 +24,7 @@ function setup(options = {}) {
   const listeners = {}, documentListeners = {}, emitted = [], fontLoads = [];
   const fontReady = deferred(), media = {matches: !!options.reduced};
   media.addEventListener = (_type, fn) => { media.change = fn; };
-  const images = Array.from({length: 3}, (_, i) => {
+  const images = Array.from({length: 2}, (_, i) => {
     const events = {}, decoded = deferred();
     return {
       id: 'image-' + i, loading: 'lazy', complete: !!options.cached, naturalWidth: options.cached ? 400 : 0,
@@ -126,13 +126,15 @@ first.entry.finish();
 check(first.emitted.length === 1, 'Repeated finish calls do not retrigger page entry');
 
 const entryImages = [...html.matchAll(/<img\b(?=[^>]*data-entry-image)[^>]*\bsrc="([^"]+)"/g)].map(match => match[1]);
-check(entryImages.length === 3, 'Only the flower, story portrait and first journal photo gate entry');
+check(entryImages.length === 2, 'Only the flower and story portrait gate entry');
 for (const src of entryImages) check(html.includes('rel="preload" as="image" href="' + src + '"'), 'Preload hint for ' + src);
-check([...html.matchAll(/loading="lazy"/g)].length === 9, 'Later journal photos are lazy-loaded');
+check([...html.matchAll(/loading="lazy"/g)].length === 10, 'All journal photos are lazy-loaded behind the story disclosure');
 check(!/<html[^>]*class=/.test(html), 'No-JS page is not hidden by default');
 check(!/loader-piece|intro-art-ready|reference-bg/.test(html + css + source), 'Retired artwork and animation have no page references');
 check(!/cursor\s*:\s*(?:wait|progress)/.test(css), 'Loading never displays a busy cursor');
-check(/html\.site-ready \.page,html\.site-ready \.utility\{animation:page-arrive 900ms ease-out both\}/.test(css), 'Prepared page and footer fade in together');
+check(/html\.site-ready \.page,html\.site-ready \.utility>\*\{animation:page-arrive 900ms ease-out both\}/.test(css), 'Prepared page and footer contents fade in together');
+check(/html\.site-loading \.page,html\.site-loading \.utility>\*,html\.site-loading \.skip\{visibility:hidden\}/.test(css), 'Loading hides footer contents but keeps the covering background visible');
+check(!/html\.site-(?:loading|ready) \.utility\s*[,\{]/.test(css), 'The footer itself is never hidden or faded, so the image cannot show through');
 check(/@keyframes page-arrive\{from\{opacity:0\}to\{opacity:1\}\}/.test(css), 'Entry animation only changes opacity, keeping the logo fixed');
 check(/@media\(prefers-reduced-motion:reduce\)\{[\s\S]*?animation:none!important/.test(css), 'Reduced-motion users bypass entry animation');
 check(!source.includes('fetch(') && !source.includes('serviceWorker'), 'No extra fetch layer or persistent service-worker cache');

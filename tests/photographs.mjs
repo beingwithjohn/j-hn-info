@@ -40,9 +40,16 @@ for (const [, id, figure] of figures) {
 }
 assert.match(css, /\.journal-photo img,\.journal-photo video\{[^}]*width:100%;height:auto/, 'The whole frame stays visible without cropping');
 assert.match(css, /@media\(min-width:861px\)\{\s*\.right-rail\{position:sticky;[^}]*max-height:[^}]*overflow-y:auto/, 'Expanded desktop activities remain reachable within the pinned column');
-assert.ok(html.indexOf('class="opening"') < html.indexOf('class="right-rail"') && html.indexOf('class="right-rail"') < html.indexOf('class="photo-journal"'), 'Mobile opening contains the introduction and activities before the journal');
-assert.match(css, /--journal-peek:calc\(var\(--journal-width\) \/ 15\)/, 'A tenth of the 3:2 first photo peeks above the footer');
-assert.match(css, /grid-template-rows:minmax\(calc\(100svh - var\(--page-top\) - var\(--bar\) - var\(--journal-peek\)\),auto\)/, 'The desktop opening reserves space before the journal');
+const parents = [];
+let journalParent;
+for (const [tag] of html.matchAll(/<\/?details\b[^>]*>|<section\b[^>]*class="photo-journal"[^>]*>/g)) {
+  if (tag.startsWith('</details')) parents.pop();
+  else if (tag.startsWith('<details')) parents.push(tag.match(/id="([^"]+)"/)?.[1]);
+  else journalParent = [...parents];
+}
+assert.deepEqual(journalParent, ['story'], 'The entire gallery is inside the main story disclosure, not the nested longer biography');
+assert.match(html, /<details class="feature story" id="story">/, 'The story and gallery are closed on first load');
+assert.ok(!css.includes('--journal-peek'), 'The gallery no longer peeks out on the landing');
 assert.ok(js.includes("getComputedStyle(rail).position === 'sticky'") && js.includes('rail.scrollBy('), 'Activity navigation scrolls its own rail on desktop');
 assert.ok(!/\.video-toggle[^{}]*:hover/.test(css), 'Hovering does not alter the video');
-console.log('Journal checks passed: ten photographs, two silent looping videos, captions, chronology and a subtle gallery peek.');
+console.log('Journal checks passed: ten photographs and two silent looping videos unfold only inside the story.');

@@ -13,7 +13,10 @@ for (const [, src] of html.matchAll(/(?:src|href)="([^"#]+)"/g)) {
 assert.ok(html.includes('unfold-ambient.js?v=music-only-1'), 'Listening footer remains loaded without hover audio');
 assert.ok(html.includes('src="entry.js?v=photographs-1"'), 'Landing media uses the selective preload controller');
 assert.ok(!/id="artwork"|loader-piece|reference-bg/.test(html + css), 'Striped artwork and its loading animation are removed');
-assert.equal([...html.matchAll(/rel="preload" as="image"/g)].length, 3);
+assert.equal([...html.matchAll(/rel="preload" as="image"/g)].length, 2);
+assert.ok(!html.includes('I grew up in Liverpool, between cultures and religions.'), 'The requested sentence is removed from the initial introduction');
+assert.equal([...html.matchAll(/>say hello ↗<\/a>/g)].length, 1, 'Only the top say hello link remains');
+assert.ok(!/feature-actions|back to the page/.test(html), 'No duplicate action links sit below the story');
 assert.ok(!/beings-logo/.test(html + css), 'Beings Club section has no logo or unnecessary preload');
 for (const id of ['space-to-be', 'beings-club', 'arc-network', 'wonderfool', 'in-the-garden', 'story', 'more-story']) {
   assert.ok(html.includes('id="' + id + '"'), 'Existing in-page information retained: ' + id);
@@ -63,6 +66,6 @@ assert.ok(!podcastSection.includes('href="https://wonderfool.substack.com"'), 'P
 assert.match(html, /href="https:\/\/jackkornfield\.com\/the-mindfulness-meditation-teacher-certification-program\/"[^>]*>MMTCP<\/a>/, 'First training links to the official MMTCP page');
 assert.match(html, /href="https:\/\/www\.dharmamoon\.com\/mindfulness-meditation-teacher-training"[^>]*>Dharma Moon<\/a>/, 'Second training links directly to the Dharma Moon training');
 assert.ok(!html.includes('class="letter-form"'), 'No subscription form at landing');
-assert.ok(html.includes("What I'm up to:"), 'Projects are introduced as current activities');
+assert.ok(html.includes("What I'm up to now:"), 'Projects are introduced as current activities');
 assert.ok(!html.includes('—'), 'Copy has no em dashes');
 console.log('Homepage checks passed: artwork removed, flower retained, separate letters and podcast, metadata, assets and personal content verified.');

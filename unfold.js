@@ -1,4 +1,5 @@
-// Animate real document height, not overlays. Native details are the fallback.
+// Stories settle gently into place; shorter disclosures animate their height.
+// Native details remain the fallback without JavaScript or motion support.
 (() => {
   const panels = [...document.querySelectorAll('details[id]')];
   const projects = panels.filter(panel => panel.classList.contains('project'));
@@ -32,14 +33,22 @@
     if (parent && running.has(parent)) running.get(parent).animation.finish();
     const startHeight = panel.getBoundingClientRect().height;
     const previous = running.get(panel);
+    const body = panel.querySelector(':scope > .disclosure-body');
+    const chapter = panel.id === 'more-story';
+    // Capture an interrupted reveal before cancelling it, so quick toggles
+    // continue from the currently visible frame instead of flashing.
+    const visualStart = (panel === story || chapter) && previous ? {
+      opacity: getComputedStyle(body).opacity,
+      transform: getComputedStyle(body).transform
+    } : null;
     if (previous) {
       running.delete(panel);
       previous.animation.cancel();
+      previous.contentAnimation?.cancel();
       previous.resolve(false);
     }
     desired.set(panel, next);
     if (next) lastPanel = panel;
-    const body = panel.querySelector(':scope > .disclosure-body');
     body.inert = !next;
     panel.open = true;
     panel.style.height = '';
@@ -53,14 +62,33 @@
       panel.classList.remove('is-closing');
       return Promise.resolve(true);
     }
-    panel.style.height = `${endHeight}px`;
-    panel.style.overflow = 'hidden';
+    if (panel !== story) {
+      panel.style.height = `${endHeight}px`;
+      panel.style.overflow = 'hidden';
+    }
     return new Promise(resolve => {
-      const animation = panel.animate(
+      const revealFrames = [
+        visualStart || {opacity: next ? 0 : 1, transform: next ? 'translateY(12px)' : 'translateY(0)'},
+        {opacity: next ? 1 : 0, transform: next ? 'translateY(0)' : 'translateY(6px)'}
+      ];
+      const chapterTiming = {
+        duration: next ? 900 : 500,
+        easing: 'cubic-bezier(.2,.65,.3,1)'
+      };
+      // The story can contain thousands of pixels of photographs. Keep its
+      // natural height and animate only opacity/translation, not that full
+      // distance. Nothing below it has to be pushed out of the way.
+      const animation = panel === story ? body.animate(revealFrames, {
+        duration: next ? 900 : 240,
+        easing: next ? 'cubic-bezier(.2,.65,.3,1)' : 'ease-out'
+      }) : panel.animate(
         [{height: `${startHeight}px`}, {height: `${endHeight}px`}],
-        {duration: 640, easing: 'cubic-bezier(.22,.75,.2,1)'}
+        chapter ? chapterTiming : {duration: 640, easing: 'cubic-bezier(.22,.75,.2,1)'}
       );
-      running.set(panel, {animation, resolve});
+      // The nested biography also moves the photographs below it. Let its
+      // height and content settle together, without an abrupt text reveal.
+      const contentAnimation = chapter ? body.animate(revealFrames, {...chapterTiming, fill: 'both'}) : null;
+      running.set(panel, {animation, contentAnimation, resolve});
       animation.onfinish = () => {
         if (running.get(panel)?.animation !== animation) return;
         running.delete(panel);
@@ -68,6 +96,7 @@
         panel.style.height = '';
         panel.style.overflow = '';
         panel.classList.remove('is-closing');
+        contentAnimation?.cancel();
         resolve(true);
       };
     });
@@ -125,8 +154,12 @@
     const next = !desired.get(panel);
     const done = next ? reveal(panel, origin) : close(panel);
     writeHistory(panel);
+    // If the mobile story sits below the viewport, bring it into view during
+    // its reveal rather than adding a second scroll after the animation.
+    const isStory = panel === story || panel.id === 'more-story';
+    if (next && isStory) keepVisible(panel);
     done.then(completed => {
-      if (completed && next && desired.get(panel)) keepVisible(panel);
+      if (completed && next && desired.get(panel) && !isStory) keepVisible(panel);
     });
   }
 

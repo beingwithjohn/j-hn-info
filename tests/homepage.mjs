@@ -57,9 +57,17 @@ for (const size of [16, 32, 180, 512]) {
   assert.equal(icon.readUInt32BE(20), size, 'Favicon height matches its declared size');
   assert.ok(html.includes('href="images/favicon-' + size + '.png?v=flower-1"'), 'Flower icon linked with a fresh cache key');
 }
-assert.match(html, /id="wonderfool">[\s\S]*?Letters on being/, 'Wonderfool is introduced as letters');
-assert.match(html, /id="in-the-garden">[\s\S]*?My podcast/, 'In the Garden has its own podcast section');
+assert.ok(!html.includes('class="work-desc"'), 'Activity names have no small by-lines');
+assert.deepEqual([...html.matchAll(/<span class="work-title">([^<]+)<\/span>/g)].map(match => match[1]), ['Space to Be', 'Beings Club', 'ARC Network', 'Wonderfool', 'In the Garden'], 'All five activity names remain');
+const wonderfoolSection = html.match(/<details class="project" id="wonderfool">([\s\S]*?)<\/details>/)[1];
+assert.ok(!wonderfoolSection.includes('I write letters on being.'), 'The repeated letters sentence is removed');
+assert.ok(wonderfoolSection.includes('<p class="practical">Letters on Being. Every 1st and 3rd Tuesday.</p>'), 'Wonderfool displays its publication schedule');
+assert.ok(!wonderfoolSection.includes('Good company for travelling somewhere new.'), 'The travelling line belongs to the podcast instead');
+assert.ok(!wonderfoolSection.includes('a-message-for-beings-of-space'), 'The What Is Happening link is removed');
+assert.match(wonderfoolSection, /href="https:\/\/wonderfool\.substack\.com"[^>]*>read Wonderfool ↗/, 'The main publication link remains');
+assert.match(html, /id="in-the-garden">[\s\S]*?In the Garden is my podcast/, 'In the Garden keeps its expanded podcast description');
 const podcastSection = html.match(/<details class="project" id="in-the-garden">([\s\S]*?)<\/details>/)[1];
+assert.ok(podcastSection.includes('<p class="practical">Good company for travelling somewhere new.</p>'), 'In the Garden has the travelling line in the same muted style');
 assert.match(podcastSection, /href="https:\/\/wonderfool\.substack\.com\/podcast"[^>]*>listen on Substack ↗/, 'Substack link goes directly to the podcast');
 assert.match(podcastSection, /href="https:\/\/open\.spotify\.com\/show\/76dQ2wEAlHByA0dCkoe2sq"[^>]*>listen on Spotify ↗/, 'Spotify links to the continuing podcast feed');
 assert.ok(!podcastSection.includes('href="https://wonderfool.substack.com"'), 'Podcast links do not send listeners to the whole publication');
